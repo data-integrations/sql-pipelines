@@ -16,9 +16,10 @@
 
 package io.cdap.pipeline.sql.api;
 
-import io.cdap.pipeline.sql.api.enums.SQLOperandType;
+import io.cdap.pipeline.sql.api.enums.OperandType;
 import io.cdap.pipeline.sql.api.interfaces.Aliasable;
 import io.cdap.pipeline.sql.api.interfaces.Operand;
+import io.cdap.pipeline.sql.api.interfaces.Queryable;
 
 import javax.annotation.Nullable;
 
@@ -27,14 +28,14 @@ import javax.annotation.Nullable;
  *
  * A column may be aliased or used as an operand in an expression.
  */
-public class SQLColumn implements Aliasable, Operand {
+public class Column implements Aliasable, Operand {
   private final String columnName;
-  private final SQLTable columnTable;
+  private Queryable columnFrom;
   private final String columnAlias;
 
-  public SQLColumn(String name, @Nullable SQLTable table, @Nullable String alias) {
+  public Column(String name, @Nullable Queryable from, @Nullable String alias) {
     this.columnName = name;
-    this.columnTable = table;
+    this.columnFrom = from;
     this.columnAlias = alias;
   }
 
@@ -50,20 +51,31 @@ public class SQLColumn implements Aliasable, Operand {
   }
 
   @Override
-  public SQLOperandType getOperandType() {
-    return SQLOperandType.COLUMN;
+  public OperandType getOperandType() {
+    return OperandType.COLUMN;
   }
 
   public String getName() {
     return columnName;
   }
 
-  public boolean hasTable() {
-    return columnTable != null;
+  public boolean hasFrom() {
+    return columnFrom != null;
   }
 
+  /**
+   * The column's source queryable object. Columns should be attached to a queryable which denotes their origin.
+   * When creating a query, all columns in the Select field of the {@link StructuredQuery} should originate from
+   * the query's corresponding From field.
+   *
+   * @return The column's origin queryable
+   */
   @Nullable
-  public SQLTable getTable() {
-    return columnTable;
+  public Queryable getFrom() {
+    return columnFrom;
+  }
+
+  public void setFrom(Queryable from) {
+    columnFrom = from;
   }
 }

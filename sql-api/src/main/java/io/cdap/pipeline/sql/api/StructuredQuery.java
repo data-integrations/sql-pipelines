@@ -16,10 +16,9 @@
 
 package io.cdap.pipeline.sql.api;
 
-import io.cdap.pipeline.sql.api.enums.SQLReadableType;
-import io.cdap.pipeline.sql.api.interfaces.Aliasable;
+import io.cdap.pipeline.sql.api.enums.QueryableType;
 import io.cdap.pipeline.sql.api.interfaces.Filterable;
-import io.cdap.pipeline.sql.api.interfaces.SQLReadable;
+import io.cdap.pipeline.sql.api.interfaces.Queryable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,20 +30,20 @@ import javax.annotation.Nullable;
  *
  * A query may be filtered, aliased, or read from as a subquery.
  */
-public class SQLQuery implements Aliasable, Filterable, SQLReadable {
-  private final List<SQLColumn> selectColumns;
-  private final SQLFilter queryFilter;
-  private final SQLReadable queryFrom;
+public class StructuredQuery implements Filterable, Queryable {
+  private final List<Column> selectColumns;
+  private final Filter queryFilter;
+  private final Queryable queryFrom;
   private final String queryAlias;
 
-  private SQLQuery(List<SQLColumn> selectCols, SQLFilter filter, SQLReadable from, @Nullable String alias) {
+  private StructuredQuery(List<Column> selectCols, Filter filter, Queryable from, @Nullable String alias) {
     selectColumns = Collections.unmodifiableList(selectCols);
     queryFilter = filter;
     queryFrom = from;
     queryAlias = alias;
   }
 
-  public List<SQLColumn> getColumns() {
+  public List<Column> getColumns() {
     return selectColumns;
   }
 
@@ -55,7 +54,7 @@ public class SQLQuery implements Aliasable, Filterable, SQLReadable {
 
   @Override
   @Nullable
-  public SQLFilter getFilter() {
+  public Filter getFilter() {
     return queryFilter;
   }
 
@@ -71,11 +70,12 @@ public class SQLQuery implements Aliasable, Filterable, SQLReadable {
   }
 
   @Override
-  public SQLReadableType getSourceType() {
-    return SQLReadableType.QUERY;
+  public QueryableType getType() {
+    return QueryableType.QUERY;
   }
 
-  public SQLReadable getQueryFrom() {
+  @Nullable
+  public Queryable getQueryFrom() {
     return queryFrom;
   }
 
@@ -83,43 +83,43 @@ public class SQLQuery implements Aliasable, Filterable, SQLReadable {
     return new Builder();
   }
 
-  public static Builder builder(SQLQuery query) {
+  public static Builder builder(StructuredQuery query) {
     return new Builder(query);
   }
 
   /**
-   * A builder class for a {@link SQLQuery}.
+   * A builder class for a {@link StructuredQuery}.
    */
   public static class Builder {
-    private List<SQLColumn> columns;
-    private SQLFilter filter;
-    private SQLReadable from;
+    private List<Column> columns;
+    private Filter filter;
+    private Queryable from;
     private String alias;
 
     private Builder() {
       columns = new ArrayList<>();
     }
 
-    private Builder(SQLQuery query) {
+    private Builder(StructuredQuery query) {
       this.columns = query.getColumns();
       this.filter = query.getFilter();
       this.from = query.getQueryFrom();
       this.alias = query.getAlias();
     }
 
-    public Builder select(SQLColumn... columns) {
-      for (SQLColumn c: columns) {
+    public Builder select(Column... columns) {
+      for (Column c: columns) {
         this.columns.add(c);
       }
       return this;
     }
 
-    public Builder from(SQLReadable from) {
+    public Builder from(Queryable from) {
       this.from = from;
       return this;
     }
 
-    public Builder where(SQLFilter filter) {
+    public Builder where(Filter filter) {
       this.filter = filter;
       return this;
     }
@@ -129,13 +129,8 @@ public class SQLQuery implements Aliasable, Filterable, SQLReadable {
       return this;
     }
 
-    public SQLQuery build() {
-      if (columns == null || columns.size() == 0) {
-        throw new IllegalArgumentException("Columns must be provided.");
-      } else if (from == null) {
-        throw new IllegalArgumentException("A query must read from a readable source.");
-      }
-      return new SQLQuery(columns, filter, from, alias);
+    public StructuredQuery build() {
+      return new StructuredQuery(columns, filter, from, alias);
     }
   }
 }

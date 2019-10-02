@@ -16,9 +16,11 @@
 
 package io.cdap.pipeline.sql.api.enums;
 
+import io.cdap.pipeline.sql.api.interfaces.Queryable;
+
 /**
- * An enum representing the operand types in a {@link io.cdap.pipeline.sql.api.SQLFilter} expression.
+ * An enum representing the different types for the {@link Queryable} interface.
  */
-public enum SQLOperandType {
-  CONSTANT, COLUMN
+public enum QueryableType {
+  QUERY, TABLE
 }

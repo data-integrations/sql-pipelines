@@ -16,11 +16,12 @@
 
 package io.cdap.pipeline.sql.api.interfaces;
 
-import io.cdap.pipeline.sql.api.enums.SQLOperandType;
+import io.cdap.pipeline.sql.api.Filter;
+import io.cdap.pipeline.sql.api.enums.OperandType;
 
 /**
- * A SQL component which may serve as an operand in a {@link io.cdap.pipeline.sql.api.SQLFilter} expression.
+ * A SQL component which may serve as an operand in a {@link Filter} expression.
  */
 public interface Operand {
-  SQLOperandType getOperandType();
+  OperandType getOperandType();
 }

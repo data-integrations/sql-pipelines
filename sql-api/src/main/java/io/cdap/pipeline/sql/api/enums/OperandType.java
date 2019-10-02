@@ -14,20 +14,13 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.constants;
+package io.cdap.pipeline.sql.api.enums;
 
-import io.cdap.pipeline.sql.api.enums.ConstantType;
+import io.cdap.pipeline.sql.api.Filter;
 
 /**
- * A constant wrapping a primitive {@link String} type.
+ * An enum representing the operand types in a {@link Filter} expression.
  */
-public class StringConstant extends AbstractConstant<String> {
-  public StringConstant(String str) {
-    super(str);
-  }
-
-  @Override
-  public ConstantType getConstantType() {
-    return ConstantType.STRING;
-  }
+public enum OperandType {
+  CONSTANT, COLUMN
 }

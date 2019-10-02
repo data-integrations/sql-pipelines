@@ -16,9 +16,9 @@
 
 package io.cdap.pipeline.sql.api;
 
-import io.cdap.pipeline.sql.api.enums.SQLReadableType;
+import io.cdap.pipeline.sql.api.enums.QueryableType;
 import io.cdap.pipeline.sql.api.interfaces.Aliasable;
-import io.cdap.pipeline.sql.api.interfaces.SQLReadable;
+import io.cdap.pipeline.sql.api.interfaces.Queryable;
 
 import javax.annotation.Nullable;
 
@@ -27,13 +27,13 @@ import javax.annotation.Nullable;
  *
  * A table is able to be read from and may have an alias.
  */
-public class SQLTable implements SQLReadable, Aliasable {
+public class Table implements Queryable {
   private final String projectName;
   private final String databaseName;
   private final String tableName;
   private final String tableAlias;
 
-  public SQLTable(@Nullable String project, @Nullable String db, String table, @Nullable String alias) {
+  public Table(@Nullable String project, @Nullable String db, String table, @Nullable String alias) {
     projectName = project;
     databaseName = db;
     tableName = table;
@@ -52,8 +52,8 @@ public class SQLTable implements SQLReadable, Aliasable {
   }
 
   @Override
-  public SQLReadableType getSourceType() {
-    return SQLReadableType.TABLE;
+  public QueryableType getType() {
+    return QueryableType.TABLE;
   }
 
   public boolean hasProject() {

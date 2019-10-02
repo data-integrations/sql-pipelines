@@ -14,11 +14,14 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.enums;
+package io.cdap.pipeline.sql.serializer.interfaces;
+
+import io.cdap.pipeline.sql.api.StructuredQuery;
+import io.cdap.pipeline.sql.api.Table;
 
 /**
- * An enum representing the different types for the {@link io.cdap.pipeline.sql.api.interfaces.SQLReadable} interface.
+ * Serializes a {@link StructuredQuery} into a {@link String} which may be executed upon arbitrary SQL platforms.
  */
-public enum SQLReadableType {
-  QUERY, TABLE
+public interface SQLSerializer {
+  String getSQL(StructuredQuery query, Table temporaryTable);
 }

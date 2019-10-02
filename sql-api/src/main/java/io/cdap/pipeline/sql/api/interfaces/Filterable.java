@@ -16,7 +16,7 @@
 
 package io.cdap.pipeline.sql.api.interfaces;
 
-import io.cdap.pipeline.sql.api.SQLFilter;
+import io.cdap.pipeline.sql.api.Filter;
 
 import javax.annotation.Nullable;
 
@@ -27,5 +27,5 @@ public interface Filterable {
   boolean hasFilter();
 
   @Nullable
-  SQLFilter getFilter();
+  Filter getFilter();
 }

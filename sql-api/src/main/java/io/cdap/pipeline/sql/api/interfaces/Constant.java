@@ -16,8 +16,8 @@
 
 package io.cdap.pipeline.sql.api.interfaces;
 
-import io.cdap.pipeline.sql.api.enums.SQLConstantType;
-import io.cdap.pipeline.sql.api.enums.SQLOperandType;
+import io.cdap.pipeline.sql.api.enums.ConstantType;
+import io.cdap.pipeline.sql.api.enums.OperandType;
 
 /**
  * A SQL component which is of a fixed constant type.
@@ -26,10 +26,10 @@ import io.cdap.pipeline.sql.api.enums.SQLOperandType;
 public interface Constant<T> extends Operand {
   T get();
 
-  SQLConstantType getConstantType();
+  ConstantType getConstantType();
 
   @Override
-  default SQLOperandType getOperandType() {
-    return SQLOperandType.CONSTANT;
+  default OperandType getOperandType() {
+    return OperandType.CONSTANT;
   }
 }

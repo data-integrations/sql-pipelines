@@ -16,9 +16,11 @@
 
 package io.cdap.pipeline.sql.api.enums;
 
+import io.cdap.pipeline.sql.api.Filter;
+
 /**
- * An enum representing the constant types for the {@link io.cdap.pipeline.sql.api.interfaces.Constant} interface.
+ * An enum representing the different operation types in an {@link Filter} expression.
  */
-public enum SQLConstantType {
-  DATETIME, INTEGER, STRING
+public enum PredicateOperatorType {
+  LESS, LESS_OR_EQUAL, EQUAL, GREATER, GREATER_OR_EQUAL, AND, OR
 }

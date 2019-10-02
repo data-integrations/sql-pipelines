@@ -16,7 +16,7 @@
 
 package io.cdap.pipeline.sql.api.constants;
 
-import io.cdap.pipeline.sql.api.enums.SQLConstantType;
+import io.cdap.pipeline.sql.api.enums.ConstantType;
 
 import java.time.LocalDateTime;
 
@@ -29,7 +29,7 @@ public class DateTimeConstant extends AbstractConstant<LocalDateTime> {
   }
 
   @Override
-  public SQLConstantType getConstantType() {
-    return SQLConstantType.DATETIME;
+  public ConstantType getConstantType() {
+    return ConstantType.DATETIME;
   }
 }
