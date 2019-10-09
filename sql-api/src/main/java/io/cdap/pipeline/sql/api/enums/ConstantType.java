@@ -14,13 +14,11 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.interfaces;
-
-import io.cdap.pipeline.sql.api.enums.SQLReadableType;
+package io.cdap.pipeline.sql.api.enums;
 
 /**
- * A SQL component which may be read from in a {@link io.cdap.pipeline.sql.api.SQLQuery}.
+ * An enum representing the constant types for the {@link io.cdap.pipeline.sql.api.interfaces.Constant} interface.
  */
-public interface SQLReadable {
-  SQLReadableType getSourceType();
+public enum ConstantType {
+  DATETIME, INTEGER, STRING
 }

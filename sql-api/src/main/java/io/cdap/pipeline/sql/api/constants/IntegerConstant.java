@@ -16,7 +16,7 @@
 
 package io.cdap.pipeline.sql.api.constants;
 
-import io.cdap.pipeline.sql.api.enums.SQLConstantType;
+import io.cdap.pipeline.sql.api.enums.ConstantType;
 
 /**
  * A constant wrapping a primitive {@link Integer} type.
@@ -27,7 +27,7 @@ public class IntegerConstant extends AbstractConstant<Integer> {
   }
 
   @Override
-  public SQLConstantType getConstantType() {
-    return SQLConstantType.INTEGER;
+  public ConstantType getConstantType() {
+    return ConstantType.INTEGER;
   }
 }

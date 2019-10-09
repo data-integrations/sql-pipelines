@@ -17,7 +17,7 @@
 package io.cdap.pipeline.sql.api;
 
 
-import io.cdap.pipeline.sql.api.enums.SQLPredicateOperator;
+import io.cdap.pipeline.sql.api.enums.PredicateOperatorType;
 import io.cdap.pipeline.sql.api.interfaces.Operand;
 
 import javax.annotation.Nullable;
@@ -27,22 +27,22 @@ import javax.annotation.Nullable;
  *
  * The filter expression can be represented as an operation expression tree.
  */
-public class SQLFilter extends ExpressionTreeNode<Operand, SQLPredicateOperator> {
-  public SQLFilter(Operand left, Operand right, SQLPredicateOperator operator) {
+public class Filter extends ExpressionTreeNode<Operand, PredicateOperatorType> {
+  public Filter(Operand left, Operand right, PredicateOperatorType operator) {
     super(null, null, left, right, operator);
   }
 
-  public SQLFilter(SQLFilter left, SQLFilter right, SQLPredicateOperator operator) {
+  public Filter(Filter left, Filter right, PredicateOperatorType operator) {
     super(left, right, null, null, operator);
   }
 
   @Nullable
-  public SQLFilter getLeftFilter() {
-    return (SQLFilter) super.getLeftNode();
+  public Filter getLeftFilter() {
+    return (Filter) super.getLeftNode();
   }
 
   @Nullable
-  public SQLFilter getRightFilter() {
-    return (SQLFilter) super.getRightNode();
+  public Filter getRightFilter() {
+    return (Filter) super.getRightNode();
   }
 }

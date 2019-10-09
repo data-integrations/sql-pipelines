@@ -14,11 +14,16 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.enums;
+package io.cdap.pipeline.sql.api.interfaces;
+
+import io.cdap.pipeline.sql.api.StructuredQuery;
+import io.cdap.pipeline.sql.api.enums.QueryableType;
 
 /**
- * An enum representing the different operation types in an {@link io.cdap.pipeline.sql.api.SQLFilter} expression.
+ * A SQL component which may be read from in a {@link StructuredQuery}.
+ *
+ * A queryable component may be aliased.
  */
-public enum SQLPredicateOperator {
-  LESS, LESS_OR_EQUAL, EQUAL, GREATER, GREATER_OR_EQUAL, AND, OR
+public interface Queryable extends Aliasable {
+  QueryableType getType();
 }
