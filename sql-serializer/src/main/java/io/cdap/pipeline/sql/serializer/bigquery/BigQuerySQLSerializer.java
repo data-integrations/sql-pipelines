@@ -16,20 +16,21 @@
 
 package io.cdap.pipeline.sql.serializer.bigquery;
 
-import io.cdap.pipeline.sql.api.Column;
-import io.cdap.pipeline.sql.api.Filter;
-import io.cdap.pipeline.sql.api.StructuredQuery;
-import io.cdap.pipeline.sql.api.Table;
-import io.cdap.pipeline.sql.api.constants.DateTimeConstant;
-import io.cdap.pipeline.sql.api.constants.IntegerConstant;
-import io.cdap.pipeline.sql.api.constants.StringConstant;
-import io.cdap.pipeline.sql.api.enums.OperandType;
-import io.cdap.pipeline.sql.api.enums.PredicateOperatorType;
-import io.cdap.pipeline.sql.api.enums.QueryableType;
-import io.cdap.pipeline.sql.api.interfaces.Aliasable;
-import io.cdap.pipeline.sql.api.interfaces.Constant;
-import io.cdap.pipeline.sql.api.interfaces.Operand;
-import io.cdap.pipeline.sql.api.interfaces.Queryable;
+import io.cdap.pipeline.sql.api.core.Column;
+import io.cdap.pipeline.sql.api.core.Filter;
+import io.cdap.pipeline.sql.api.core.StructuredQuery;
+import io.cdap.pipeline.sql.api.core.Table;
+import io.cdap.pipeline.sql.api.core.constants.DateTimeConstant;
+import io.cdap.pipeline.sql.api.core.constants.IntegerConstant;
+import io.cdap.pipeline.sql.api.core.constants.StringConstant;
+import io.cdap.pipeline.sql.api.core.enums.ConstantType;
+import io.cdap.pipeline.sql.api.core.enums.OperandType;
+import io.cdap.pipeline.sql.api.core.enums.PredicateOperatorType;
+import io.cdap.pipeline.sql.api.core.enums.QueryableType;
+import io.cdap.pipeline.sql.api.core.interfaces.Aliasable;
+import io.cdap.pipeline.sql.api.core.interfaces.Constant;
+import io.cdap.pipeline.sql.api.core.interfaces.Operand;
+import io.cdap.pipeline.sql.api.core.interfaces.Queryable;
 import io.cdap.pipeline.sql.serializer.interfaces.SQLSerializer;
 
 import java.time.Instant;
@@ -126,7 +127,11 @@ public class BigQuerySQLSerializer implements SQLSerializer {
     b.append("SELECT ");
     for (int i = 0; i < query.getColumns().size(); i++) {
       Column col = query.getColumns().get(i);
-      appendColumn(b, col);
+      if (col.isCasted()) {
+        appendCastedColumn(b, col);
+      } else {
+        appendColumn(b, col);
+      }
       if (col.hasAlias()) {
         appendAlias(b, col);
       }
@@ -163,6 +168,28 @@ public class BigQuerySQLSerializer implements SQLSerializer {
       b.append('.');
     }
     b.append(c.getName());
+    return b;
+  }
+
+  /**
+   * Takes an existing {@link StringBuilder} and appends the string form of a casted {@link Column} to it.
+   * The casted column takes the form of:
+   *
+   * CAST([column] AS [castType])
+   *
+   * @param b The existing string builder
+   * @param c The given column
+   * @return The string builder with the column appended
+   */
+  private StringBuilder appendCastedColumn(StringBuilder b, Column c) {
+    if (!c.isCasted()) {
+      throw new IllegalArgumentException("Column must be castable.");
+    }
+    b.append("CAST(");
+    appendColumn(b, c);
+    b.append(" AS ");
+    appendConstantType(b, c.getCastType());
+    b.append(')');
     return b;
   }
 
@@ -357,6 +384,30 @@ public class BigQuerySQLSerializer implements SQLSerializer {
         break;
       default:
         throw new IllegalStateException("Unsupported constant type " + o.getConstantType());
+    }
+    return b;
+  }
+
+  /**
+   * Takes an existing {@link StringBuilder} and appends the string form of a {@link ConstantType} to it.
+   *
+   * @param b The existing string builder
+   * @param type The given constant type
+   * @return The string buidler with the constant appended
+   */
+  private StringBuilder appendConstantType(StringBuilder b, ConstantType type) {
+    switch (type) {
+      case DATETIME:
+        b.append("DATETIME");
+        break;
+      case INTEGER:
+        b.append("INT64");
+        break;
+      case STRING:
+        b.append("STRING");
+        break;
+      default:
+        throw new IllegalStateException("Unsupported constant type " + type);
     }
     return b;
   }

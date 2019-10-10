@@ -14,14 +14,11 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.serializer.interfaces;
-
-import io.cdap.pipeline.sql.api.core.StructuredQuery;
-import io.cdap.pipeline.sql.api.core.Table;
+package io.cdap.pipeline.sql.api.core.enums;
 
 /**
- * Serializes a {@link StructuredQuery} into a {@link String} which may be executed upon arbitrary SQL platforms.
+ * An enum representing the constant types for the {@link io.cdap.pipeline.sql.api.core.interfaces.Constant} interface.
  */
-public interface SQLSerializer {
-  String getSQL(StructuredQuery query, Table temporaryTable);
+public enum ConstantType {
+  DATETIME, INTEGER, STRING
 }

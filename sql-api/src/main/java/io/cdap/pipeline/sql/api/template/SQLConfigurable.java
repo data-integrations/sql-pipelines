@@ -14,22 +14,19 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.interfaces;
+package io.cdap.pipeline.sql.api.template;
 
-import io.cdap.pipeline.sql.api.enums.ConstantType;
-import io.cdap.pipeline.sql.api.enums.OperandType;
+import io.cdap.pipeline.sql.api.core.StructuredQuery;
+import io.cdap.pipeline.sql.api.template.interfaces.QueryConfigurable;
 
 /**
- * A SQL component which is of a fixed constant type.
- * @param <T> The object which this constant wraps around
+ * Base class for SQL run configuration.
  */
-public interface Constant<T> extends Operand {
-  T get();
-
-  ConstantType getConstantType();
-
+public abstract class SQLConfigurable implements QueryConfigurable {
+  /**
+   * Constructs a {@link StructuredQuery} and returns it to the configurer.
+   * @return A structured query object
+   */
   @Override
-  default OperandType getOperandType() {
-    return OperandType.CONSTANT;
-  }
+  public abstract StructuredQuery constructQuery();
 }

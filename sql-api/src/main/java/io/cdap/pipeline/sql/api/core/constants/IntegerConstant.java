@@ -14,22 +14,20 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.constants;
+package io.cdap.pipeline.sql.api.core.constants;
 
-import io.cdap.pipeline.sql.api.interfaces.Constant;
+import io.cdap.pipeline.sql.api.core.enums.ConstantType;
 
 /**
- * An abstract constant type.
- * @param <T> The type of object to encapsulate
+ * A constant wrapping a primitive {@link Integer} type.
  */
-public abstract class AbstractConstant<T> implements Constant<T> {
-  private final T value;
-
-  public AbstractConstant(T v) {
-    this.value = v;
+public class IntegerConstant extends AbstractConstant<Integer> {
+  public IntegerConstant(Integer i) {
+    super(i);
   }
 
-  public T get() {
-    return value;
+  @Override
+  public ConstantType getConstantType() {
+    return ConstantType.INTEGER;
   }
 }

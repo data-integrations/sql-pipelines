@@ -14,18 +14,11 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.interfaces;
-
-import io.cdap.pipeline.sql.api.Filter;
-
-import javax.annotation.Nullable;
+package io.cdap.pipeline.sql.api.template;
 
 /**
- * A SQL component which may be filtered.
+ * Represents an abstract SQL transformation node.
  */
-public interface Filterable {
-  boolean hasFilter();
-
-  @Nullable
-  Filter getFilter();
+public abstract class SQLNode extends SQLConfigurable {
+  public static final String PLUGIN_TYPE = "sqlnode";
 }

@@ -14,20 +14,14 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.constants;
+package io.cdap.pipeline.sql.api.core.interfaces;
 
-import io.cdap.pipeline.sql.api.enums.ConstantType;
+import io.cdap.pipeline.sql.api.core.Filter;
+import io.cdap.pipeline.sql.api.core.enums.OperandType;
 
 /**
- * A constant wrapping a primitive {@link Integer} type.
+ * A SQL component which may serve as an operand in a {@link Filter} expression.
  */
-public class IntegerConstant extends AbstractConstant<Integer> {
-  public IntegerConstant(Integer i) {
-    super(i);
-  }
-
-  @Override
-  public ConstantType getConstantType() {
-    return ConstantType.INTEGER;
-  }
+public interface Operand {
+  OperandType getOperandType();
 }

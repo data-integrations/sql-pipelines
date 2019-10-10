@@ -14,14 +14,11 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.serializer.interfaces;
-
-import io.cdap.pipeline.sql.api.core.StructuredQuery;
-import io.cdap.pipeline.sql.api.core.Table;
+package io.cdap.pipeline.sql.api.template;
 
 /**
- * Serializes a {@link StructuredQuery} into a {@link String} which may be executed upon arbitrary SQL platforms.
+ * Represents an abstract SQL source node.
  */
-public interface SQLSerializer {
-  String getSQL(StructuredQuery query, Table temporaryTable);
+public abstract class SQLSource extends SQLConfigurable {
+  public static final String PLUGIN_TYPE = "sqlsource";
 }

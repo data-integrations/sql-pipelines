@@ -14,13 +14,13 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.enums;
+package io.cdap.pipeline.sql.api.core.enums;
 
-import io.cdap.pipeline.sql.api.Filter;
+import io.cdap.pipeline.sql.api.core.interfaces.Queryable;
 
 /**
- * An enum representing the operand types in a {@link Filter} expression.
+ * An enum representing the different types for the {@link Queryable} interface.
  */
-public enum OperandType {
-  CONSTANT, COLUMN
+public enum QueryableType {
+  QUERY, TABLE
 }

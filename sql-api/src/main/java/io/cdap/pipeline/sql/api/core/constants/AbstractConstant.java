@@ -14,22 +14,22 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.constants;
+package io.cdap.pipeline.sql.api.core.constants;
 
-import io.cdap.pipeline.sql.api.enums.ConstantType;
-
-import java.time.LocalDateTime;
+import io.cdap.pipeline.sql.api.core.interfaces.Constant;
 
 /**
- * A constant wrapping a {@link LocalDateTime} object.
+ * An abstract constant type.
+ * @param <T> The type of object to encapsulate
  */
-public class DateTimeConstant extends AbstractConstant<LocalDateTime> {
-  public DateTimeConstant(LocalDateTime datetime) {
-    super(datetime);
+public abstract class AbstractConstant<T> implements Constant<T> {
+  private final T value;
+
+  public AbstractConstant(T v) {
+    this.value = v;
   }
 
-  @Override
-  public ConstantType getConstantType() {
-    return ConstantType.DATETIME;
+  public T get() {
+    return value;
   }
 }

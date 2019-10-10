@@ -14,14 +14,16 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.serializer.interfaces;
+package io.cdap.pipeline.sql.api.core.interfaces;
 
-import io.cdap.pipeline.sql.api.core.StructuredQuery;
-import io.cdap.pipeline.sql.api.core.Table;
+import javax.annotation.Nullable;
 
 /**
- * Serializes a {@link StructuredQuery} into a {@link String} which may be executed upon arbitrary SQL platforms.
+ * A SQL component which may have an alias.
  */
-public interface SQLSerializer {
-  String getSQL(StructuredQuery query, Table temporaryTable);
+public interface Aliasable {
+  boolean hasAlias();
+
+  @Nullable
+  String getAlias();
 }

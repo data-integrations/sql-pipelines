@@ -14,11 +14,13 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.enums;
+package io.cdap.pipeline.sql.api.template.interfaces;
+
+import io.cdap.pipeline.sql.api.core.StructuredQuery;
 
 /**
- * An enum representing the constant types for the {@link io.cdap.pipeline.sql.api.interfaces.Constant} interface.
+ * Defines a class which may configure and construct a {@link StructuredQuery} object.
  */
-public enum ConstantType {
-  DATETIME, INTEGER, STRING
+public interface QueryConfigurable {
+  StructuredQuery constructQuery();
 }

@@ -41,7 +41,7 @@
     <dependency>
       <groupId>io.cdap.pipeline</groupId>
       <artifactId>sql-api</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
