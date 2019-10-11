@@ -16,13 +16,14 @@
 
 package io.cdap.pipeline.sql.serializer;
 
-import io.cdap.pipeline.sql.api.Column;
-import io.cdap.pipeline.sql.api.Filter;
-import io.cdap.pipeline.sql.api.StructuredQuery;
-import io.cdap.pipeline.sql.api.Table;
-import io.cdap.pipeline.sql.api.constants.IntegerConstant;
-import io.cdap.pipeline.sql.api.constants.StringConstant;
-import io.cdap.pipeline.sql.api.enums.PredicateOperatorType;
+import io.cdap.pipeline.sql.api.core.Column;
+import io.cdap.pipeline.sql.api.core.Filter;
+import io.cdap.pipeline.sql.api.core.StructuredQuery;
+import io.cdap.pipeline.sql.api.core.Table;
+import io.cdap.pipeline.sql.api.core.constants.IntegerConstant;
+import io.cdap.pipeline.sql.api.core.constants.StringConstant;
+import io.cdap.pipeline.sql.api.core.enums.ConstantType;
+import io.cdap.pipeline.sql.api.core.enums.PredicateOperatorType;
 import io.cdap.pipeline.sql.serializer.bigquery.BigQuerySQLSerializer;
 import org.junit.Assert;
 import org.junit.Test;
@@ -40,8 +41,8 @@ public class BigQuerySerializerTest {
     StringConstant stringConstant = new StringConstant("test1");
 
     Table table = new Table("a", "b", "c", "d");
-    Column col1 = new Column("col1", table, "c1");
-    Column col2 = new Column("col2", table, null);
+    Column col1 = Column.builder("col1").setFrom(table).setAlias("c1").build();
+    Column col2 = Column.builder("col2").setFrom(table).build();
     Filter filter = new Filter(col1, stringConstant, PredicateOperatorType.EQUAL);
     StructuredQuery validQuery = StructuredQuery.builder()
       .select(col1, col2).from(table).where(filter).build();
@@ -56,8 +57,8 @@ public class BigQuerySerializerTest {
     StringConstant stringConstant = new StringConstant("test1");
 
     Table table = new Table("a", "b", "c", "d");
-    Column col1 = new Column("col1", table, "c1");
-    Column col2 = new Column("col2", table, null);
+    Column col1 = Column.builder("col1").setFrom(table).setAlias("c1").build();
+    Column col2 = Column.builder("col2").setFrom(table).build();
     Filter filter = new Filter(col1, stringConstant, PredicateOperatorType.EQUAL);
     StructuredQuery validQuery = StructuredQuery.builder()
       .select(col1, col2).from(table).where(filter).build();
@@ -75,8 +76,8 @@ public class BigQuerySerializerTest {
     StringConstant stringConstant = new StringConstant("test1");
 
     Table table = new Table("a", "b", "c", "d");
-    Column col1 = new Column("col1", table, "c1");
-    Column col2 = new Column("col2", table, null);
+    Column col1 = Column.builder("col1").setFrom(table).setAlias("c1").build();
+    Column col2 = Column.builder("col2").setFrom(table).build();
     Filter filter = new Filter(col1, stringConstant, PredicateOperatorType.EQUAL);
     StructuredQuery validQuery = StructuredQuery.builder()
       .select(col1, col2).from(table).where(filter).build();
@@ -85,6 +86,18 @@ public class BigQuerySerializerTest {
 
     BigQuerySQLSerializer serializer = new BigQuerySQLSerializer();
     Assert.assertEquals(expectedSimpleQueryString, serializer.getSQL(validQuery, temporaryTable));
+  }
+
+  @Test
+  public void testCastedAliasedColumn() {
+    final String expectedQueryString = "SELECT CAST(Name AS INT64) AS n FROM `a`;";
+    Table table = new Table(null, null, "a", null);
+    Column column = Column.builder("Name")
+      .setFrom(table).setAlias("n").setCastType(ConstantType.INTEGER).build();
+    StructuredQuery query = StructuredQuery.builder()
+      .select(column).from(table).build();
+    BigQuerySQLSerializer serializer = new BigQuerySQLSerializer();
+    Assert.assertEquals(expectedQueryString, serializer.getSQL(query));
   }
 
   @Test
@@ -98,14 +111,14 @@ public class BigQuerySerializerTest {
     IntegerConstant intConstant = new IntegerConstant(15);
 
     Table table = new Table("a", "b", "c", "d");
-    Column col1 = new Column("col1", table, "c1");
-    Column col2 = new Column("col2", table, null);
+    Column col1 = Column.builder("col1").setFrom(table).setAlias("c1").build();
+    Column col2 = Column.builder("col2").setFrom(table).build();
     Filter innerFilter = new Filter(col1, innerString, PredicateOperatorType.EQUAL);
     StructuredQuery innerQuery = StructuredQuery.builder()
       .select(col1, col2).from(table).where(innerFilter).as("t2").build();
 
-    Column outerCol1 = new Column("c1", innerQuery, "cn1");
-    Column outerCol2 = new Column("col2", innerQuery, null);
+    Column outerCol1 = Column.builder("c1").setFrom(innerQuery).setAlias("cn1").build();
+    Column outerCol2 = Column.builder("col2").setFrom(innerQuery).build();
     Filter subFilter1 = new Filter(outerCol1, outerString, PredicateOperatorType.EQUAL);
     Filter subFilter2 = new Filter(outerCol2, intConstant, PredicateOperatorType.GREATER_OR_EQUAL);
     Filter outerFilter = new Filter(subFilter1, subFilter2, PredicateOperatorType.OR);
@@ -130,14 +143,14 @@ public class BigQuerySerializerTest {
     IntegerConstant intConstant = new IntegerConstant(15);
 
     Table innerTable = new Table("a", "b", "c", null);
-    Column col1 = new Column("col1", innerTable, "c1");
-    Column col2 = new Column("col2", innerTable, null);
+    Column col1 = Column.builder("col1").setFrom(innerTable).setAlias("c1").build();
+    Column col2 = Column.builder("col2").setFrom(innerTable).build();
     Filter innerFilter = new Filter(col1, innerString, PredicateOperatorType.EQUAL);
     StructuredQuery innerQuery = StructuredQuery.builder().select(col1, col2)
       .from(innerTable).where(innerFilter).as("t2").build();
 
-    Column outerCol1 = new Column("c1", innerQuery, "cn1");
-    Column outerCol2 = new Column("col2", innerQuery, null);
+    Column outerCol1 = Column.builder("c1").setFrom(innerQuery).setAlias("cn1").build();
+    Column outerCol2 = Column.builder("col2").setFrom(innerQuery).build();
     Filter subFilter1 = new Filter(outerCol1, outerString, PredicateOperatorType.EQUAL);
     Filter subFilter2 = new Filter(outerCol2, intConstant, PredicateOperatorType.GREATER_OR_EQUAL);
     Filter outerFilter = new Filter(subFilter1, subFilter2, PredicateOperatorType.OR);

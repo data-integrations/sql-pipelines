@@ -14,7 +14,7 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api;
+package io.cdap.pipeline.sql.api.core;
 
 import javax.annotation.Nullable;
 

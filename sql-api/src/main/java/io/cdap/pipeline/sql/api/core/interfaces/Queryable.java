@@ -14,13 +14,16 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.enums;
+package io.cdap.pipeline.sql.api.core.interfaces;
 
-import io.cdap.pipeline.sql.api.interfaces.Queryable;
+import io.cdap.pipeline.sql.api.core.StructuredQuery;
+import io.cdap.pipeline.sql.api.core.enums.QueryableType;
 
 /**
- * An enum representing the different types for the {@link Queryable} interface.
+ * A SQL component which may be read from in a {@link StructuredQuery}.
+ *
+ * A queryable component may be aliased.
  */
-public enum QueryableType {
-  QUERY, TABLE
+public interface Queryable extends Aliasable {
+  QueryableType getType();
 }

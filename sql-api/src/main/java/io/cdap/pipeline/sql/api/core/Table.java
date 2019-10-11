@@ -14,11 +14,10 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api;
+package io.cdap.pipeline.sql.api.core;
 
-import io.cdap.pipeline.sql.api.enums.QueryableType;
-import io.cdap.pipeline.sql.api.interfaces.Aliasable;
-import io.cdap.pipeline.sql.api.interfaces.Queryable;
+import io.cdap.pipeline.sql.api.core.enums.QueryableType;
+import io.cdap.pipeline.sql.api.core.interfaces.Queryable;
 
 import javax.annotation.Nullable;
 

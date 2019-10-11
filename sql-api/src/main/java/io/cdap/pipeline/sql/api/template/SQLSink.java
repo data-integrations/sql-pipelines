@@ -14,13 +14,15 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.enums;
+package io.cdap.pipeline.sql.api.template;
 
-import io.cdap.pipeline.sql.api.Filter;
+import io.cdap.pipeline.sql.api.core.Table;
 
 /**
- * An enum representing the different operation types in an {@link Filter} expression.
+ * Represents an abstract SQL sink node.
  */
-public enum PredicateOperatorType {
-  LESS, LESS_OR_EQUAL, EQUAL, GREATER, GREATER_OR_EQUAL, AND, OR
+public abstract class SQLSink extends SQLConfigurable {
+  public static final String PLUGIN_TYPE = "sqlsink";
+
+  public abstract Table getDestinationTable();
 }

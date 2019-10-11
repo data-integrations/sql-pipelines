@@ -14,16 +14,22 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.interfaces;
+package io.cdap.pipeline.sql.api.core.interfaces;
 
-import javax.annotation.Nullable;
+import io.cdap.pipeline.sql.api.core.enums.ConstantType;
+import io.cdap.pipeline.sql.api.core.enums.OperandType;
 
 /**
- * A SQL component which may have an alias.
+ * A SQL component which is of a fixed constant type.
+ * @param <T> The object which this constant wraps around
  */
-public interface Aliasable {
-  boolean hasAlias();
+public interface Constant<T> extends Operand {
+  T get();
 
-  @Nullable
-  String getAlias();
+  ConstantType getConstantType();
+
+  @Override
+  default OperandType getOperandType() {
+    return OperandType.CONSTANT;
+  }
 }

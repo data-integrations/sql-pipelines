@@ -14,14 +14,22 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.serializer.interfaces;
+package io.cdap.pipeline.sql.api.core.constants;
 
-import io.cdap.pipeline.sql.api.core.StructuredQuery;
-import io.cdap.pipeline.sql.api.core.Table;
+import io.cdap.pipeline.sql.api.core.enums.ConstantType;
+
+import java.time.LocalDateTime;
 
 /**
- * Serializes a {@link StructuredQuery} into a {@link String} which may be executed upon arbitrary SQL platforms.
+ * A constant wrapping a {@link LocalDateTime} object.
  */
-public interface SQLSerializer {
-  String getSQL(StructuredQuery query, Table temporaryTable);
+public class DateTimeConstant extends AbstractConstant<LocalDateTime> {
+  public DateTimeConstant(LocalDateTime datetime) {
+    super(datetime);
+  }
+
+  @Override
+  public ConstantType getConstantType() {
+    return ConstantType.DATETIME;
+  }
 }

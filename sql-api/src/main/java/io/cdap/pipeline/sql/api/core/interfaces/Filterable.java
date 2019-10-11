@@ -14,14 +14,18 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.interfaces;
+package io.cdap.pipeline.sql.api.core.interfaces;
 
-import io.cdap.pipeline.sql.api.Filter;
-import io.cdap.pipeline.sql.api.enums.OperandType;
+import io.cdap.pipeline.sql.api.core.Filter;
+
+import javax.annotation.Nullable;
 
 /**
- * A SQL component which may serve as an operand in a {@link Filter} expression.
+ * A SQL component which may be filtered.
  */
-public interface Operand {
-  OperandType getOperandType();
+public interface Filterable {
+  boolean hasFilter();
+
+  @Nullable
+  Filter getFilter();
 }

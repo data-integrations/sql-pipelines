@@ -14,11 +14,11 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api;
+package io.cdap.pipeline.sql.api.core;
 
 
-import io.cdap.pipeline.sql.api.enums.PredicateOperatorType;
-import io.cdap.pipeline.sql.api.interfaces.Operand;
+import io.cdap.pipeline.sql.api.core.enums.PredicateOperatorType;
+import io.cdap.pipeline.sql.api.core.interfaces.Operand;
 
 import javax.annotation.Nullable;
 

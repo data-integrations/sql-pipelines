@@ -14,12 +14,14 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api;
+package io.cdap.pipeline.sql.api.core;
 
-import io.cdap.pipeline.sql.api.enums.OperandType;
-import io.cdap.pipeline.sql.api.interfaces.Aliasable;
-import io.cdap.pipeline.sql.api.interfaces.Operand;
-import io.cdap.pipeline.sql.api.interfaces.Queryable;
+import io.cdap.pipeline.sql.api.core.enums.ConstantType;
+import io.cdap.pipeline.sql.api.core.enums.OperandType;
+import io.cdap.pipeline.sql.api.core.interfaces.Aliasable;
+import io.cdap.pipeline.sql.api.core.interfaces.Castable;
+import io.cdap.pipeline.sql.api.core.interfaces.Operand;
+import io.cdap.pipeline.sql.api.core.interfaces.Queryable;
 
 import javax.annotation.Nullable;
 
@@ -28,15 +30,17 @@ import javax.annotation.Nullable;
  *
  * A column may be aliased or used as an operand in an expression.
  */
-public class Column implements Aliasable, Operand {
+public class Column implements Aliasable, Castable, Operand {
   private final String columnName;
   private Queryable columnFrom;
   private final String columnAlias;
+  private final ConstantType castType;
 
-  public Column(String name, @Nullable Queryable from, @Nullable String alias) {
+  private Column(String name, @Nullable Queryable from, @Nullable String alias, @Nullable ConstantType cast) {
     this.columnName = name;
     this.columnFrom = from;
     this.columnAlias = alias;
+    this.castType = cast;
   }
 
   @Override
@@ -48,6 +52,16 @@ public class Column implements Aliasable, Operand {
   @Nullable
   public String getAlias() {
     return columnAlias;
+  }
+
+  @Override
+  public boolean isCasted() {
+    return castType != null;
+  }
+
+  @Override
+  public ConstantType getCastType() {
+    return castType;
   }
 
   @Override
@@ -77,5 +91,42 @@ public class Column implements Aliasable, Operand {
 
   public void setFrom(Queryable from) {
     columnFrom = from;
+  }
+
+  public static Builder builder(String columnName) {
+    return new Builder(columnName);
+  }
+
+  /**
+   * Builder class for a column component.
+   */
+  public static class Builder {
+    private final String columnName;
+    private Queryable columnFrom;
+    private String columnAlias;
+    private ConstantType castType;
+
+    public Builder(String columnName) {
+      this.columnName = columnName;
+    }
+
+    public Builder setFrom(Queryable columnFrom) {
+      this.columnFrom = columnFrom;
+      return this;
+    }
+
+    public Builder setAlias(String alias) {
+      this.columnAlias = alias;
+      return this;
+    }
+
+    public Builder setCastType(ConstantType type) {
+      this.castType = type;
+      return this;
+    }
+
+    public Column build() {
+      return new Column(columnName, columnFrom, columnAlias, castType);
+    }
   }
 }
