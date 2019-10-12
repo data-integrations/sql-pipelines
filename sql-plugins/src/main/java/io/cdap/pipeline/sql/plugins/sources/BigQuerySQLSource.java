@@ -14,7 +14,7 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.plugins;
+package io.cdap.pipeline.sql.plugins.sources;
 
 import com.google.common.base.Strings;
 import io.cdap.cdap.api.annotation.Description;
@@ -24,29 +24,23 @@ import io.cdap.cdap.api.plugin.PluginConfig;
 import io.cdap.pipeline.sql.api.core.Column;
 import io.cdap.pipeline.sql.api.core.StructuredQuery;
 import io.cdap.pipeline.sql.api.core.Table;
-import io.cdap.pipeline.sql.api.template.SQLSink;
+import io.cdap.pipeline.sql.api.template.SQLSource;
 
 /**
- * A BigQuery SQL sink.
+ * A BigQuery SQL source.
  */
-@Plugin(type = SQLSink.PLUGIN_TYPE)
+@Plugin(type = SQLSource.PLUGIN_TYPE)
 @Name("BigQueryTable")
-@Description("A BigQuery sink.")
-public class BigQuerySQLSink extends SQLSink {
-  private final BigQuerySQLSinkConfig config;
+@Description("A BigQuery source.")
+public class BigQuerySQLSource extends SQLSource {
+  private final BigQuerySQLSourceConfig config;
 
-  public BigQuerySQLSink(BigQuerySQLSinkConfig config) {
+  public BigQuerySQLSource(BigQuerySQLSourceConfig config) {
     this.config = config;
   }
 
   @Override
   public StructuredQuery constructQuery() {
-    Column allColumns = Column.builder("*").build();
-    return StructuredQuery.builder().select(allColumns).build();
-  }
-
-  @Override
-  public Table getDestinationTable() {
     if (Strings.isNullOrEmpty(config.getProject())) {
       throw new IllegalArgumentException("Destination project string must be provided.");
     }
@@ -56,14 +50,15 @@ public class BigQuerySQLSink extends SQLSink {
     if (Strings.isNullOrEmpty(config.getTable())) {
       throw new IllegalArgumentException("Destination table string must be provided.");
     }
-    return new Table(config.getProject(), config.getDataset(), config.getTable(), null);
+    Table table = new Table(config.getProject(), config.getDataset(), config.getTable(), null);
+    Column allColumns = Column.builder("*").setFrom(table).build();
+    return StructuredQuery.builder().select(allColumns).from(table).build();
   }
 
-
   /**
-   * The configuration class for a BigQuery SQL sink.
+   * The configuration class for a BigQuery SQL source.
    */
-  public static class BigQuerySQLSinkConfig extends PluginConfig {
+  public static class BigQuerySQLSourceConfig extends PluginConfig {
     public static final String PROJECT_NAME = "project";
     public static final String DATASET_NAME = "dataset";
     public static final String TABLE_NAME = "table";
@@ -80,7 +75,7 @@ public class BigQuerySQLSink extends SQLSink {
     @Description("The destination table.")
     private String table;
 
-    public BigQuerySQLSinkConfig(String project, String dataset, String table) {
+    public BigQuerySQLSourceConfig(String project, String dataset, String table) {
       this.project = project;
       this.dataset = dataset;
       this.table = table;

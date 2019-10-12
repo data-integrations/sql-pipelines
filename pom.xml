@@ -27,6 +27,8 @@
   <modules>
     <module>sql-api</module>
     <module>sql-serializer</module>
+    <module>sql-data-pipeline</module>
+    <module>sql-plugins</module>
   </modules>
 
   <licenses>

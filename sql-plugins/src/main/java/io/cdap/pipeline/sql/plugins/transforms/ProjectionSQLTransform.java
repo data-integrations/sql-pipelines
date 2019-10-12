@@ -14,7 +14,7 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.plugins;
+package io.cdap.pipeline.sql.plugins.transforms;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
@@ -28,11 +28,11 @@ import io.cdap.pipeline.sql.api.core.StructuredQuery;
 import io.cdap.pipeline.sql.api.core.enums.ConstantType;
 import io.cdap.pipeline.sql.api.template.SQLNode;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
@@ -76,13 +76,13 @@ public class ProjectionSQLTransform extends SQLNode {
   }
 
   private final ProjectionSQLTransformConfig projectionTransformConfig;
-  private final Set<String> fieldsToSelect;
+  private final List<String> fieldsToSelect;
   private final BiMap<String, String> fieldsToRename;
   private final Map<String, ConstantType> fieldsToCast;
 
   public ProjectionSQLTransform(ProjectionSQLTransformConfig projectionTransformConfig) {
     this.projectionTransformConfig = projectionTransformConfig;
-    this.fieldsToSelect = new HashSet<>();
+    this.fieldsToSelect = new ArrayList<>();
     this.fieldsToRename = HashBiMap.create();
     this.fieldsToCast = new HashMap<>();
   }
