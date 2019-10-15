@@ -16,9 +16,23 @@
 
 package io.cdap.pipeline.sql.api.core.enums;
 
+import io.cdap.pipeline.sql.api.core.constants.DateTimeConstant;
+import io.cdap.pipeline.sql.api.core.constants.IntegerConstant;
+import io.cdap.pipeline.sql.api.core.constants.StringConstant;
+
 /**
  * An enum representing the constant types for the {@link io.cdap.pipeline.sql.api.core.interfaces.Constant} interface.
  */
 public enum ConstantType {
-  DATETIME, INTEGER, STRING
+  DATETIME(DateTimeConstant.class), INTEGER(IntegerConstant.class), STRING(StringConstant.class);
+
+  private final Class constantClass;
+
+  ConstantType(Class constantClass) {
+    this.constantClass = constantClass;
+  }
+
+  public Class getConstantClass() {
+    return constantClass;
+  }
 }

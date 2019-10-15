@@ -14,25 +14,26 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.core.enums;
+package io.cdap.pipeline.sql.app.core;
 
-import io.cdap.pipeline.sql.api.core.StructuredQuery;
-import io.cdap.pipeline.sql.api.core.Table;
-import io.cdap.pipeline.sql.api.core.interfaces.Queryable;
+import io.cdap.cdap.api.app.AbstractApplication;
 
 /**
- * An enum representing the different types for the {@link Queryable} interface.
+ * The pipeline application for an SQL pipeline.
  */
-public enum QueryableType {
-  QUERY(StructuredQuery.class), TABLE(Table.class);
+public class SQLPipelineApp extends AbstractApplication<SQLConfig> {
+  public static final String DEFAULT_DESCRIPTION = "SQL Pipeline Application";
 
-  private final Class queryableClass;
+  @Override
+  public void configure() {
+    SQLConfig config = getConfig();
 
-  QueryableType(Class queryableClass) {
-    this.queryableClass = queryableClass;
-  }
+    if (config.getDescription() != null) {
+      setDescription(config.getDescription());
+    } else {
+      setDescription(DEFAULT_DESCRIPTION);
+    }
 
-  public Class getQueryableClass() {
-    return queryableClass;
+    getConfigurer().addWorkflow(new SQLWorkflow(config, getConfigurer()));
   }
 }

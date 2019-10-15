@@ -47,6 +47,10 @@ public class StructuredQuery implements Filterable, Queryable {
     return selectColumns;
   }
 
+  public boolean selectsAllColumns() {
+    return selectColumns.size() == 1 && selectColumns.get(0).getName().equals("*");
+  }
+
   @Override
   public boolean hasFilter() {
     return queryFilter != null;
@@ -101,16 +105,25 @@ public class StructuredQuery implements Filterable, Queryable {
     }
 
     private Builder(StructuredQuery query) {
-      this.columns = query.getColumns();
+      this.columns = new ArrayList<>(query.getColumns());
       this.filter = query.getFilter();
       this.from = query.getQueryFrom();
       this.alias = query.getAlias();
+    }
+
+    public List<Column> getColumns() {
+      return columns;
     }
 
     public Builder select(Column... columns) {
       for (Column c: columns) {
         this.columns.add(c);
       }
+      return this;
+    }
+
+    public Builder selectAllColumns() {
+      this.columns.add(Column.builder("*").build());
       return this;
     }
 

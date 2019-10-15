@@ -21,7 +21,6 @@ import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.annotation.Plugin;
 import io.cdap.cdap.api.plugin.PluginConfig;
-import io.cdap.pipeline.sql.api.core.Column;
 import io.cdap.pipeline.sql.api.core.StructuredQuery;
 import io.cdap.pipeline.sql.api.core.Table;
 import io.cdap.pipeline.sql.api.template.SQLSink;
@@ -41,8 +40,7 @@ public class BigQuerySQLSink extends SQLSink {
 
   @Override
   public StructuredQuery constructQuery() {
-    Column allColumns = Column.builder("*").build();
-    return StructuredQuery.builder().select(allColumns).build();
+    return StructuredQuery.builder().build();
   }
 
   @Override

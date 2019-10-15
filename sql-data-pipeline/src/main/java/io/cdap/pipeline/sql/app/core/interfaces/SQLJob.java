@@ -14,25 +14,17 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.core.enums;
+package io.cdap.pipeline.sql.app.core.interfaces;
 
-import io.cdap.pipeline.sql.api.core.StructuredQuery;
-import io.cdap.pipeline.sql.api.core.Table;
-import io.cdap.pipeline.sql.api.core.interfaces.Queryable;
+import io.cdap.pipeline.sql.app.core.StructuredStatement;
+
+import java.util.List;
 
 /**
- * An enum representing the different types for the {@link Queryable} interface.
+ * Represents a SQL job to be executed.
  */
-public enum QueryableType {
-  QUERY(StructuredQuery.class), TABLE(Table.class);
-
-  private final Class queryableClass;
-
-  QueryableType(Class queryableClass) {
-    this.queryableClass = queryableClass;
-  }
-
-  public Class getQueryableClass() {
-    return queryableClass;
-  }
+public interface SQLJob {
+  List<StructuredStatement> getPreActions();
+  List<StructuredStatement> getActions();
+  List<StructuredStatement> getPostActions();
 }

@@ -14,25 +14,29 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.core.enums;
+package io.cdap.pipeline.sql.app.core;
 
-import io.cdap.pipeline.sql.api.core.StructuredQuery;
-import io.cdap.pipeline.sql.api.core.Table;
-import io.cdap.pipeline.sql.api.core.interfaces.Queryable;
+import io.cdap.cdap.etl.proto.v2.ETLConfig;
+
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
- * An enum representing the different types for the {@link Queryable} interface.
+ * Represents an SQL configuration object.
  */
-public enum QueryableType {
-  QUERY(StructuredQuery.class), TABLE(Table.class);
+public class SQLConfig extends ETLConfig {
+  private final String serviceAccountPath;
 
-  private final Class queryableClass;
-
-  QueryableType(Class queryableClass) {
-    this.queryableClass = queryableClass;
+  /**
+   * For compilation purposes.
+   */
+  public SQLConfig() {
+    super(new HashSet<>(), new HashSet<>(), null, null, null,
+          false, false, 0, new HashMap<>());
+    this.serviceAccountPath = null;
   }
 
-  public Class getQueryableClass() {
-    return queryableClass;
+  public String getServiceAccountPath() {
+    return serviceAccountPath;
   }
 }

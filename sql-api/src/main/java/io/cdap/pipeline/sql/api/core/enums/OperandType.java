@@ -16,11 +16,23 @@
 
 package io.cdap.pipeline.sql.api.core.enums;
 
+import io.cdap.pipeline.sql.api.core.Column;
 import io.cdap.pipeline.sql.api.core.Filter;
+import io.cdap.pipeline.sql.api.core.interfaces.Constant;
 
 /**
  * An enum representing the operand types in a {@link Filter} expression.
  */
 public enum OperandType {
-  CONSTANT, COLUMN
+  CONSTANT(Constant.class), COLUMN(Column.class);
+
+  private final Class operandClass;
+
+  OperandType(Class operandClass) {
+    this.operandClass = operandClass;
+  }
+
+  public Class getOperandClass() {
+    return operandClass;
+  }
 }

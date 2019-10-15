@@ -137,11 +137,9 @@ public class FilterSQLTransform extends SQLNode {
     }
     // Setup the builder
     StructuredQuery.Builder builder = StructuredQuery.builder();
-    Column column = Column.builder("*").build();
-
     Filter filter = new Filter(getOperand(config.getLeftValue(), config.getLeftType()),
                                getOperand(config.getRightValue(), config.getRightType()), operator);
-    builder.select(column).where(filter);
+    builder.where(filter);
     return builder.build();
   }
 
