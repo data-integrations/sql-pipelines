@@ -23,6 +23,7 @@ import io.cdap.cdap.etl.common.ArtifactSelectorProvider;
 import io.cdap.cdap.etl.proto.v2.ETLPlugin;
 import io.cdap.cdap.etl.spec.TrackedPluginSelector;
 import io.cdap.pipeline.sql.api.template.interfaces.QueryConfigurable;
+import io.cdap.pipeline.sql.app.core.interfaces.PluginMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +31,14 @@ import java.util.List;
 /**
  * Converts {@link io.cdap.cdap.etl.proto.v2.ETLPlugin} to their respective plugins using a simple switch statement.
  */
-public class SQLPluginMapper {
+public class SQLPluginMapper implements PluginMapper {
   private final PluginConfigurer pluginConfigurer;
 
   public SQLPluginMapper(PluginConfigurer configurer) {
     this.pluginConfigurer = configurer;
   }
 
+  @Override
   public QueryConfigurable getMappedPluginInstance(ETLPlugin plugin, String stageName) {
     TrackedPluginSelector pluginSelector = new TrackedPluginSelector(
       new ArtifactSelectorProvider().getPluginSelector(plugin.getArtifactConfig()));

@@ -23,6 +23,10 @@ import io.cdap.pipeline.sql.api.core.Column;
 import io.cdap.pipeline.sql.api.core.StructuredQuery;
 import io.cdap.pipeline.sql.api.core.Table;
 import io.cdap.pipeline.sql.api.template.interfaces.QueryConfigurable;
+import io.cdap.pipeline.sql.app.core.interfaces.PluginMapper;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Generates the spec for an SQL pipeline.
@@ -30,11 +34,20 @@ import io.cdap.pipeline.sql.api.template.interfaces.QueryConfigurable;
 public class SQLPipelineSpecGenerator {
   private static final String TEMPORARY_TABLE_PREFIX = "temporary_table_";
 
-  public SQLPipelineSpec generateSpec(ETLConfig config, SQLPluginMapper mapper) {
+  public SQLPipelineSpec generateSpec(ETLConfig config, PluginMapper mapper) {
     SQLPipelineSpec.Builder specBuilder = SQLPipelineSpec.builder(config);
     // Set the stage node bimap along with temporary table and plugins
     int tempTableCounter = 0;
+    // Ensure no stages have the same name
+    Set<String> stageNames = new HashSet<>();
     for (ETLStage stage: config.getStages()) {
+      // Ensure unique stage names
+      if (stageNames.contains(stage.getName())) {
+        throw new IllegalArgumentException("Multiple stages share the same name: " + stage.getName());
+      } else {
+        stageNames.add(stage.getName());
+      }
+
       Table tempTable = new Table(null, null, TEMPORARY_TABLE_PREFIX + tempTableCounter++, null);
       QueryConfigurable plugin = mapper.getMappedPluginInstance(stage.getPlugin(), stage.getName());
       SQLPipelineNode stageNode = new SQLPipelineNode(stage, tempTable, plugin);
