@@ -165,4 +165,82 @@ public class SQLPipelinePlannerTest {
     Assert.assertEquals(query3, job.getActions().get(2).getQuery());
     Assert.assertEquals(destinationTable, job.getActions().get(2).getInsertIntoTable());
   }
+
+  /**
+   * This function is useful for creating a mock {@link SQLPipelineNode} when you don't need
+   * to validate its individual components.
+   * @param stage The {@link ETLStage} associated with the node
+   * @return A new node
+   */
+  private SQLPipelineNode createMockNode(ETLStage stage) {
+    StructuredQuery query = StructuredQuery.builder().build();
+    MockPlugin mockPlugin = new MockPlugin(query, null);
+    SQLPipelineNode node = new SQLPipelineNode(stage, null, mockPlugin);
+    node.setQuery(query);
+    return node;
+  }
+
+  /**
+   * This test checks that a cycle is detected in the following graph:
+   *
+   *                          B -->-- D
+   *                        /          \
+   *                   A ->-            ->- F
+   *                   \    \          /
+   *                    \    C -->-- E
+   *                     \           \
+   *                      \          /
+   *                       ----<----
+   *
+   *               Connection E -> A is a back edge.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testMultiNodeNonCycle() {
+    // A
+    ETLStage stageA = new ETLStage("A", null);
+    SQLPipelineNode nodeA = createMockNode(stageA);
+    // B
+    ETLStage stageB = new ETLStage("B", null);
+    SQLPipelineNode nodeB = createMockNode(stageB);
+    // C
+    ETLStage stageC = new ETLStage("C", null);
+    SQLPipelineNode nodeC = createMockNode(stageC);
+    //D
+    ETLStage stageD = new ETLStage("D", null);
+    SQLPipelineNode nodeD = createMockNode(stageD);
+    // E
+    ETLStage stageE = new ETLStage("E", null);
+    SQLPipelineNode nodeE = createMockNode(stageE);
+    // F
+    ETLStage stageF = new ETLStage("F", null);
+    SQLPipelineNode nodeF = createMockNode(stageF);
+    // connections
+    nodeA.addFromNode(nodeE);
+    nodeA.addToNode(nodeB);
+    nodeA.addToNode(nodeC);
+    nodeB.addFromNode(nodeA);
+    nodeB.addToNode(nodeD);
+    nodeC.addFromNode(nodeA);
+    nodeC.addToNode(nodeE);
+    nodeD.addFromNode(nodeB);
+    nodeD.addToNode(nodeF);
+    nodeE.addFromNode(nodeC);
+    nodeE.addToNode(nodeF);
+    nodeE.addToNode(nodeA);
+    nodeF.addFromNode(nodeD);
+    nodeF.addFromNode(nodeE);
+    // spec
+    SQLPipelineSpec spec = SQLPipelineSpec.builder(null)
+      .addSourceNode(nodeA)
+      .addSinkNode(nodeF)
+      .addStageToNodeLink(stageA, nodeA)
+      .addStageToNodeLink(stageB, nodeB)
+      .addStageToNodeLink(stageC, nodeC)
+      .addStageToNodeLink(stageD, nodeD)
+      .addStageToNodeLink(stageE, nodeE)
+      .addStageToNodeLink(stageF, nodeF)
+      .build();
+    SQLPipelinePlanner planner = new SQLPipelinePlanner();
+    planner.plan(spec);
+  }
 }

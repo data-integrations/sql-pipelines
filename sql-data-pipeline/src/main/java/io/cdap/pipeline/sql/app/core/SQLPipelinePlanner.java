@@ -59,13 +59,12 @@ public class SQLPipelinePlanner {
       while (!traversalStack.isEmpty()) {
         SQLPipelineNode currNode = traversalStack.pop();
         Set<SQLPipelineNode> visitedSet = visitedStack.pop();
-        if (visitedSet.contains(currNode)) {
-          throw new IllegalStateException("Detected a loop in the pipeline.");
-        } else {
-          visitedSet.add(currNode);
-        }
+        visitedSet.add(currNode);
         boolean first = true;
         for (SQLPipelineNode node: currNode.getFromSet()) {
+          if (visitedSet.contains(node)) {
+            throw new IllegalStateException("Detected a loop in the pipeline.");
+          }
           if (!definedNodes.contains(node)) {
             if (first) {
               visitedStack.add(visitedSet);
