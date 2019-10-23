@@ -14,19 +14,13 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.template;
+package io.cdap.pipeline.sql.api.template.tables;
 
-import io.cdap.pipeline.sql.api.template.tables.AbstractTableInfo;
+import org.apache.calcite.schema.impl.AbstractTable;
 
 /**
- * Represents an abstract SQL sink node.
+ * Represents a Calcite table with a name identifier.
  */
-public abstract class SQLSink extends SQLTransform {
-  public static final String PLUGIN_TYPE = "sqlsink";
-
-  /**
-   * Gets the table to create or insert into. Type schema of the table is computed from the nodes.
-   * @return The table to create or insert into
-   */
-  public abstract AbstractTableInfo getDestinationTable();
+public abstract class AbstractTableInfo extends AbstractTable {
+  public abstract String getTableName();
 }

@@ -16,9 +16,17 @@
 
 package io.cdap.pipeline.sql.api.template;
 
+import io.cdap.pipeline.sql.api.template.tables.AbstractTableInfo;
+
 /**
  * Represents an abstract SQL source node.
  */
-public abstract class SQLSource extends SQLConfigurable {
+public abstract class SQLSource extends SQLTransform {
   public static final String PLUGIN_TYPE = "sqlsource";
+
+  /**
+   * Returns the table to select from. Must contain the type schema from which the pipeline will query from.
+   * @return The table to select from
+   */
+  public abstract AbstractTableInfo getSourceTable();
 }
