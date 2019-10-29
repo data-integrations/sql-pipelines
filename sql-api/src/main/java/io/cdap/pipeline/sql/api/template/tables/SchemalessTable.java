@@ -14,19 +14,28 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.template;
+package io.cdap.pipeline.sql.api.template.tables;
 
-import io.cdap.pipeline.sql.api.template.tables.AbstractTableInfo;
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
 
 /**
- * Represents an abstract SQL sink node.
+ * A table with only a table name. Returns null for the row type.
  */
-public abstract class SQLSink extends SQLTransform {
-  public static final String PLUGIN_TYPE = "sqlsink";
+public class SchemalessTable extends AbstractTableInfo {
+  private final String tableName;
 
-  /**
-   * Gets the table to create or insert into. Type schema of the table is computed from the nodes.
-   * @return The table to create or insert into
-   */
-  public abstract AbstractTableInfo getDestinationTable();
+  public SchemalessTable(String tableName) {
+    this.tableName = tableName;
+  }
+
+  @Override
+  public String getTableName() {
+    return tableName;
+  }
+
+  @Override
+  public RelDataType getRowType(RelDataTypeFactory typeFactory) {
+    return null;
+  }
 }

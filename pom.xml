@@ -18,7 +18,7 @@
 
   <groupId>io.cdap.pipeline</groupId>
   <artifactId>sql-pipelines</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>6.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>CDAP SQL Pipelines Prototype</name>
   <description>A CDAP application for building SQL ELT pipelines</description>
@@ -26,7 +26,7 @@
 
   <modules>
     <module>sql-api</module>
-    <module>sql-serializer</module>
+    <module>sql-plugins</module>
   </modules>
 
   <licenses>

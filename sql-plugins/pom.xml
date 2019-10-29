@@ -21,7 +21,7 @@
   <parent>
     <groupId>io.cdap.pipeline</groupId>
     <artifactId>sql-pipelines</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>6.2.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -50,7 +50,7 @@
               <Embed-Dependency>*;inline=false;scope=compile</Embed-Dependency>
               <Embed-Transitive>true</Embed-Transitive>
               <Embed-Directory>lib</Embed-Directory>
-              <Export-Package>io.cdap.pipeline.sql.plugins</Export-Package>
+              <Export-Package>io.cdap.pipeline.sql.plugins.*</Export-Package>
             </instructions>
           </configuration>
           <executions>
@@ -76,6 +76,25 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <version>3.3.0</version>
       </plugin>
+      <plugin>
+        <groupId>io.cdap</groupId>
+        <artifactId>cdap-maven-plugin</artifactId>
+        <version>1.1.0</version>
+        <configuration>
+          <cdapArtifacts>
+            <parent>system:cdap-sql-pipeline[${project.version},7.0.0-SNAPSHOT)</parent>
+          </cdapArtifacts>
+        </configuration>
+        <executions>
+          <execution>
+            <id>create-artifact-config</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>create-plugin-json</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
@@ -86,25 +105,25 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.cdap.pipeline</groupId>
-      <artifactId>sql-seralizer</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>io.cdap.cdap</groupId>
       <artifactId>cdap-etl-proto</artifactId>
-      <version>6.1.0-SNAPSHOT</version>
+      <version>6.0.0</version>
     </dependency>
     <dependency>
       <groupId>io.cdap.cdap</groupId>
       <artifactId>cdap-etl-core</artifactId>
-      <version>6.1.0-SNAPSHOT</version>
+      <version>6.0.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>28.1-jre</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-bigquery</artifactId>
+      <version>1.96.0</version>
     </dependency>
   </dependencies>
 

@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "spec-version": "1.0"
+  },
+  "configuration-groups": [
+    {
+      "label": "Projection Configuration",
+      "properties": [
+        {
+          "widget-type": "keyvalue-dropdown",
+          "label": "Convert",
+          "name": "convert",
+          "widget-attributes": {
+            "showDelimiter": "false",
+            "key-placeholder": "Field Name",
+            "dropdownOptions": [
+              "boolean",
+              "bytes",
+              "double",
+              "float",
+              "int",
+              "long",
+              "string"
+            ]
+          }
+        },
+        {
+          "widget-type": "csv",
+          "label": "Fields to select",
+          "name": "select",
+          "widget-attributes": {
+            "delimiter": ",",
+            "value-placeholder": "Field Name"
+          }
+        },
+        {
+          "widget-type": "keyvalue",
+          "label": "Fields to rename",
+          "name": "rename",
+          "widget-attributes": {
+            "showDelimiter": "false",
+            "key-placeholder": "Field Name",
+            "value-placeholder": "New Field Name"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": []
+}

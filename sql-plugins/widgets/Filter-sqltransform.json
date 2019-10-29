@@ -1,0 +1,72 @@
+{
+  "metadata": {
+    "spec-version": "1.0"
+  },
+  "configuration-groups": [
+    {
+      "label": "Filter Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Left Operand Value",
+          "name": "leftValue",
+          "widget-attributes": {
+            "placeholder": "Value of the left operand"
+          }
+        },
+        {
+          "widget-type": "select",
+          "label": "Left Operand Type",
+          "name": "leftType",
+          "widget-attributes": {
+            "values": [
+              "column",
+              "string",
+              "datetime",
+              "integer"
+            ],
+            "default": "string"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Right Operand Value",
+          "name": "rightValue",
+          "widget-attributes": {
+            "placeholder": "Value of the right operand"
+          }
+        },
+        {
+          "widget-type": "select",
+          "label": "Right Operand Type",
+          "name": "rightType",
+          "widget-attributes": {
+            "values": [
+              "column",
+              "string",
+              "datetime",
+              "integer"
+            ],
+            "default": "string"
+          }
+        },
+        {
+          "widget-type": "select",
+          "label": "Operator Type",
+          "name": "operation",
+          "widget-attributes": {
+            "values": [
+              "less_than",
+              "less_than_or_equal",
+              "equal",
+              "greater_than",
+              "greater_than_or_equal"
+            ],
+            "default": "equal"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": []
+}

@@ -21,7 +21,7 @@
   <parent>
     <groupId>io.cdap.pipeline</groupId>
     <artifactId>sql-pipelines</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>6.2.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -41,6 +41,11 @@
       <groupId>javax.annotation</groupId>
       <artifactId>javax.annotation-api</artifactId>
       <version>1.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.calcite</groupId>
+      <artifactId>calcite-core</artifactId>
+      <version>1.21.0</version>
     </dependency>
   </dependencies>
 
