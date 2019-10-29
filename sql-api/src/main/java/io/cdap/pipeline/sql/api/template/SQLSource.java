@@ -26,6 +26,7 @@ public abstract class SQLSource extends SQLTransform {
 
   /**
    * Returns the table to select from. Must contain the type schema from which the pipeline will query from.
+   *
    * @return The table to select from
    */
   public abstract AbstractTableInfo getSourceTable();

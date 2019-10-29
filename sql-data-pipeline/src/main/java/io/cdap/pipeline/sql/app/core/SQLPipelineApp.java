@@ -14,20 +14,26 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.template;
+package io.cdap.pipeline.sql.app.core;
 
-import io.cdap.pipeline.sql.api.template.tables.AbstractTableInfo;
+import io.cdap.cdap.api.app.AbstractApplication;
 
 /**
- * Represents an abstract SQL sink node.
+ * The pipeline application for an SQL pipeline.
  */
-public abstract class SQLSink extends SQLTransform {
-  public static final String PLUGIN_TYPE = "sqlsink";
+public class SQLPipelineApp extends AbstractApplication<SQLConfig> {
+  public static final String DEFAULT_DESCRIPTION = "SQL Pipeline Application";
 
-  /**
-   * Gets the table to create or insert into. Type schema of the table is computed from the nodes.
-   *
-   * @return The table to create or insert into
-   */
-  public abstract AbstractTableInfo getDestinationTable();
+  @Override
+  public void configure() {
+    SQLConfig config = getConfig();
+
+    if (config.getDescription() != null) {
+      setDescription(config.getDescription());
+    } else {
+      setDescription(DEFAULT_DESCRIPTION);
+    }
+
+    getConfigurer().addWorkflow(new SQLWorkflow(config, getConfigurer()));
+  }
 }

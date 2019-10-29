@@ -20,9 +20,8 @@
           "name": "leftType",
           "widget-attributes": {
             "values": [
-              "column",
+              "field",
               "string",
-              "datetime",
               "integer"
             ],
             "default": "string"
@@ -42,9 +41,8 @@
           "name": "rightType",
           "widget-attributes": {
             "values": [
-              "column",
+              "field",
               "string",
-              "datetime",
               "integer"
             ],
             "default": "string"
@@ -58,11 +56,11 @@
             "values": [
               "less_than",
               "less_than_or_equal",
-              "equal",
+              "equals",
               "greater_than",
               "greater_than_or_equal"
             ],
-            "default": "equal"
+            "default": "equals"
           }
         }
       ]

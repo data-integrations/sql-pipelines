@@ -46,7 +46,7 @@ Example
 ```json
 {
     "name": "Projection",
-    "type": "sqlnode",
+    "type": "sqltransform",
     "properties": {
         "cast": "cost:double",
         "rename": "cost:price",

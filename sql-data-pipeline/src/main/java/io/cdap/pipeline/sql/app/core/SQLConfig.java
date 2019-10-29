@@ -14,20 +14,25 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.api.template;
+package io.cdap.pipeline.sql.app.core;
 
-import io.cdap.pipeline.sql.api.template.tables.AbstractTableInfo;
+import io.cdap.cdap.etl.proto.v2.ETLConfig;
+
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
- * Represents an abstract SQL sink node.
+ * Represents an SQL configuration object.
+ *
+ * Currently, the SQLConfig object represents a direct extension of {@link ETLConfig}, but future configuration
+ * variables may be added.
  */
-public abstract class SQLSink extends SQLTransform {
-  public static final String PLUGIN_TYPE = "sqlsink";
-
+public class SQLConfig extends ETLConfig {
   /**
-   * Gets the table to create or insert into. Type schema of the table is computed from the nodes.
-   *
-   * @return The table to create or insert into
+   * For compilation purposes.
    */
-  public abstract AbstractTableInfo getDestinationTable();
+  public SQLConfig() {
+    super(new HashSet<>(), new HashSet<>(), null, null, null,
+          false, false, 0, new HashMap<>());
+  }
 }

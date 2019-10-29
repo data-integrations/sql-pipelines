@@ -30,7 +30,6 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.tools.RelBuilder;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,8 +111,16 @@ public class ProjectionSQLTransform extends SQLTransform {
   }
 
   private void init() {
-    // Validation
-    if (Strings.isNullOrEmpty(projectionTransformConfig.select)) {
+    // Setup select sets
+    if (!Strings.isNullOrEmpty(projectionTransformConfig.select)) {
+      for (String field: projectionTransformConfig.select.split(Pattern.quote(","))) {
+        if (!Strings.isNullOrEmpty(field)) {
+          fieldsToSelect.add(field);
+        } else {
+          throw new IllegalArgumentException("Select field may not be empty.");
+        }
+      }
+    } else {
       throw new IllegalArgumentException("Must specify one of drop or select.");
     }
     // Setup the rename map
@@ -123,6 +130,9 @@ public class ProjectionSQLTransform extends SQLTransform {
         String[] keyValuePair = mapping.split(Pattern.quote(":"));
         if (keyValuePair.length != 2) {
           throw new IllegalArgumentException("Rename mapping '" + mapping + "' must contain a key and a value.");
+        }
+        if (!fieldsToSelect.contains(keyValuePair[0])) {
+          throw new IllegalArgumentException("Field to rename must be present in selected columns.");
         }
         if (fieldsToRename.containsKey(keyValuePair[0])) {
           throw new IllegalArgumentException("Cannot rename column '" +
@@ -144,6 +154,9 @@ public class ProjectionSQLTransform extends SQLTransform {
         if (keyValuePair.length != 2) {
           throw new IllegalArgumentException("Cast mapping '" + mapping + "' must contain a key and a type.");
         }
+        if (!fieldsToSelect.contains(keyValuePair[0])) {
+          throw new IllegalArgumentException("Field to cast must be present in selected columns.");
+        }
         SqlTypeName type = SqlTypeName.get(keyValuePair[1].toUpperCase());
         if (type == null) {
           throw new IllegalArgumentException("Unsupported type cast to '" + keyValuePair[1] + "'.");
@@ -153,10 +166,6 @@ public class ProjectionSQLTransform extends SQLTransform {
         }
         fieldsToCast.put(keyValuePair[0], type);
       }
-    }
-    // Setup select sets
-    if (!Strings.isNullOrEmpty(projectionTransformConfig.select)) {
-      Collections.addAll(fieldsToSelect, projectionTransformConfig.select.split(Pattern.quote(",")));
     }
   }
 }

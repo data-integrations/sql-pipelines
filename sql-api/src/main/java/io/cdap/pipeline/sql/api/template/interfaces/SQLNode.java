@@ -38,6 +38,7 @@ public interface SQLNode {
 
   /**
    * Performs a transform on the passed in relational expression builder and returns the relational expression.
+   *
    * @param builder The {@link RelNode} expression builder used to generate the query
    * @return The relational expression
    */
