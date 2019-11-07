@@ -27,6 +27,7 @@
   <modules>
     <module>sql-api</module>
     <module>sql-plugins</module>
+    <module>sql-data-pipeline</module>
   </modules>
 
   <licenses>
@@ -87,6 +88,30 @@
       </plugin>
     </plugins>
   </build>
+
+  <properties>
+    <cdap.version>6.0.0</cdap.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.cdap.cdap</groupId>
+        <artifactId>cdap-etl-core</artifactId>
+        <version>${cdap.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.cdap.cdap</groupId>
+        <artifactId>cdap-etl-proto</artifactId>
+        <version>${cdap.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>28.1-jre</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>

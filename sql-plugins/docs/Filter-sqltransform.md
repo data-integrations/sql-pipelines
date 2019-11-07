@@ -29,7 +29,7 @@ Example
 ```json
 {
     "name": "Filter",
-    "type": "sqlnode",
+    "type": "sqltransform",
     "properties": {
         "leftValue": "Name",
         "leftType": "field",

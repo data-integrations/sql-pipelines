@@ -152,8 +152,8 @@ public class FilterSQLTransform extends SQLTransform {
     }
     RexNode leftOperand = getOperandFromStrings(builder, config.getLeftValue(), config.getLeftType().toUpperCase());
     RexNode rightOperand = getOperandFromStrings(builder, config.getRightValue(), config.getRightType().toUpperCase());
-    builder.filter(builder.call(getOperatorFromString(config.getOperation().toUpperCase()),
-                                leftOperand, rightOperand));
+    SqlBinaryOperator operator = getOperatorFromString(config.getOperation().toUpperCase());
+    builder.filter(builder.call(operator, leftOperand, rightOperand));
     return builder.build();
   }
 }

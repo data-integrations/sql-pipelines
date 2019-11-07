@@ -8,8 +8,8 @@
       "properties": [
         {
           "widget-type": "keyvalue-dropdown",
-          "label": "Convert",
-          "name": "convert",
+          "label": "Cast",
+          "name": "cast",
           "widget-attributes": {
             "showDelimiter": "false",
             "key-placeholder": "Field Name",
