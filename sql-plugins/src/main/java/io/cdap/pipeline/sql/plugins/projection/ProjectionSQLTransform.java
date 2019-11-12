@@ -14,7 +14,7 @@
  * the License.
  */
 
-package io.cdap.pipeline.sql.plugins.transforms;
+package io.cdap.pipeline.sql.plugins.projection;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
@@ -43,6 +43,9 @@ import javax.annotation.Nullable;
 @Name("Projection")
 @Description("The Projection transform lets you drop, select, rename, and cast fields to a different type.")
 public class ProjectionSQLTransform extends SQLTransform {
+  private static final String RENAME_NAME = "rename";
+  private static final String CAST_NAME = "cast";
+  private static final String SELECT_NAME = "select";
   private static final String RENAME_DESC = "List of fields to rename. This is a comma-separated list of key-value " +
     "pairs, where each pair is separated by a colon and specifies the input and output names. For " +
     "example: 'datestr:date,timestamp:ts' specifies that the 'datestr' field should be renamed to 'date' and the " +
@@ -57,17 +60,21 @@ public class ProjectionSQLTransform extends SQLTransform {
    * Config class for ProjectionTransform
    */
   public static class ProjectionSQLTransformConfig extends PluginConfig {
+    @Name(RENAME_NAME)
     @Description(RENAME_DESC)
     @Nullable
-    String rename;
+    private final String rename;
 
+    @Name(CAST_NAME)
     @Description(CAST_DESC)
     @Nullable
-    String cast;
+    private final String cast;
 
+    @Name(SELECT_NAME)
     @Description(SELECT_DESC)
     @Nullable
-    String select;
+    private final String select;
+
     public ProjectionSQLTransformConfig(String rename, String cast, String select) {
       this.rename = rename;
       this.cast = cast;

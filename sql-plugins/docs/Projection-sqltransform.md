@@ -19,20 +19,11 @@ all other fields.
 
 Properties
 ----------
-**select:** Comma-separated list of fields to select. For example: ``'field1,field2,field3'``.
+**Select:** List of fields to select.
 
-**rename:** List of fields to rename. This is a comma-separated list of key-value pairs,
-where each pair is separated by a colon and specifies the input and output names.
+**Rename:** List of fields to rename.
 
-For example: ``'datestr:date,timestamp:ts'`` specifies that the ``'datestr'`` field should be
-renamed to ``'date'`` and the ``'timestamp'`` field should be renamed to ``'ts'``.
-
-**cast:** List of fields to convert to a different type. This is a comma-separated list
-of key-value pairs, where each pair is separated by a colon and specifies the field name
-and the desired type.
-
-For example: ``'count:integer,price:double'`` specifies that the ``'count'`` field should be
-converted to an integer and the ``'price'`` field should be converted to a double.
+**Cast:** List of fields to convert to a different type.
 
 Only simple types are supported (boolean, int, long, float, double, bytes, string). Any
 simple type can be converted to bytes or a string. Otherwise, a type can only be converted
@@ -42,18 +33,14 @@ converted to an int.
 
 Example
 -------
+Say we want to convert the cost of a table to a double, rename the ``cost`` to ``price``, and select two fields, ``id``
+and ``cost``.
 
-```json
-{
-    "name": "Projection",
-    "type": "sqltransform",
-    "properties": {
-        "cast": "cost:double",
-        "rename": "cost:price",
-            "select": "id,cost"
-    }
-}
-```
+**Select:** ``id``, ``cost``
+
+**Rename:** Rename ``cost`` to ``price``
+
+**Cast:** Cast ``cost`` to ``double``
 
 This will output the following generalized SQL:
 

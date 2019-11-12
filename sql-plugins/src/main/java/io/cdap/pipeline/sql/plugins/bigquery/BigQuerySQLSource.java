@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -72,18 +73,19 @@ public class BigQuerySQLSource extends SQLSource {
     }
     // Get the schema from BigQuery API
     GoogleCredentials credentials;
-    try {
-      File credentialsPath = new File(config.getServiceAccountPath());
-      FileInputStream serviceAccountStream = new FileInputStream(credentialsPath);
+    File credentialsPath = new File(config.getServiceAccountPath());
+    try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
       credentials = ServiceAccountCredentials.fromStream(serviceAccountStream);
+    } catch (FileNotFoundException e) {
+      throw new IllegalArgumentException("Unable to load service account credentials file.");
     } catch (IOException e) {
-      throw new IllegalArgumentException("Invalid credentials file");
+      throw new IllegalArgumentException("Invalid service account credentials file.");
     }
+
     // Instantiate a client.
     BigQuery bigquery =
       BigQueryOptions.newBuilder().setCredentials(credentials).build().getService();
-    TableId id = TableId.of(config.getDataset(), config.getTable());
-    Table bqTable = bigquery.getTable(id);
+    Table bqTable = bigquery.getTable(TableId.of(config.getProject(), config.getDataset(), config.getTable()));
     Schema bqSchema = bqTable.getDefinition().getSchema();
     BigQueryTable table = new BigQueryTable(bqSchema);
     DelegateTable delegate = new DelegateTable(String.format("%s.%s.%s", config.getProject(),
@@ -102,19 +104,19 @@ public class BigQuerySQLSource extends SQLSource {
 
     @Name(PROJECT_NAME)
     @Description("The destination project.")
-    private String project;
+    private final String project;
 
     @Name(DATASET_NAME)
     @Description("The destination dataset.")
-    private String dataset;
+    private final String dataset;
 
     @Name(TABLE_NAME)
     @Description("The destination table.")
-    private String table;
+    private final String table;
 
     @Name(SERVICE_ACCOUNT_PATH_NAME)
     @Description("The path to the service account credentials file.")
-    private String serviceAccountPath;
+    private final String serviceAccountPath;
 
     public BigQuerySQLSourceConfig(String project, String dataset, String table, String serviceAccountPath) {
       this.project = project;

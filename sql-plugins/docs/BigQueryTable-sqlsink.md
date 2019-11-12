@@ -12,13 +12,13 @@ Necessary for generating the final insert-into statement for BigQuery.
 
 Properties
 ----------
-**project:** Project name.
+**Project:** BigQuery project name.
 
-**dataset:** Dataset name.
+**Dataset:** BigQuery dataset name.
 
-**table:** Table name.
+**Table:** BigQuery table name.
 
-**serviceAccountPath:** The path to the service account credentials file.
+**Service Account Path:** The path to the service account credentials file.
 
 
 Example
