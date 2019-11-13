@@ -12,33 +12,30 @@ The filter useful for filtering an SQL dataset.
 
 Properties
 ----------
-**leftValue:** Left operand value.
+**Left Value:** Left operand value.
 
-**leftType:** Left operand type.
+**Left Type:** Left operand type.
 
-**rightValue:** Right operand value.
+**Right Value:** Right operand value.
 
-**rightType:** Right operand type.
+**Right Type:** Right operand type.
 
-**operation:** Operator type.
+**Operation:** Operator type.
 
 
 Example
 -------
+Suppose we want to filter for people with the name ``John``. We would use the following fields:
 
-```json
-{
-    "name": "Filter",
-    "type": "sqltransform",
-    "properties": {
-        "leftValue": "Name",
-        "leftType": "field",
-        "rightValue": "John",
-        "rightType": "string",
-        "operation": "equals"
-    }
-}
-```
+**Left Value:** ``Name``
+
+**Left Type:** ``field``
+
+**Right Value:** ``John``
+
+**Right Type:** ``string``
+
+**Operation:** ``equals``
 
 This will output the following generalized SQL:
 

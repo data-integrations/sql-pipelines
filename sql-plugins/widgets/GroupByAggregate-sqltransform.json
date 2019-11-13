@@ -1,0 +1,42 @@
+{
+  "metadata": {
+    "spec-version": "1.6",
+    "label": "Group by Aggregator"
+  },
+  "display-name" : "Group By",
+  "configuration-groups": [
+    {
+      "label": "General",
+      "properties": [
+        {
+          "widget-type": "csv",
+          "label": "Group by fields",
+          "name": "groupByFields",
+          "widget-attributes": {
+            "delimiter": ",",
+            "value-placeholder": "Field Name"
+          }
+        },
+        {
+          "widget-type": "function-dropdown-with-alias",
+          "label": "Aggregates",
+          "name": "aggregates",
+          "widget-attributes": {
+            "placeholders": {
+              "field": "field",
+              "alias": "alias"
+            },
+            "dropdownOptions": [
+              "Avg",
+              "Count",
+              "Max",
+              "Min",
+              "Sum"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": []
+}

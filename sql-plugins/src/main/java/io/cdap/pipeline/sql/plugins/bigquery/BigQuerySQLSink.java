@@ -70,19 +70,19 @@ public class BigQuerySQLSink extends SQLSink {
 
     @Name(PROJECT_NAME)
     @Description("The destination project.")
-    private String project;
+    private final String project;
 
     @Name(DATASET_NAME)
     @Description("The destination dataset.")
-    private String dataset;
+    private final String dataset;
 
     @Name(TABLE_NAME)
     @Description("The destination table.")
-    private String table;
+    private final String table;
 
     @Name(SERVICE_ACCOUNT_PATH_NAME)
     @Description("The path to the service account credentials file.")
-    private String serviceAccountPath;
+    private final String serviceAccountPath;
 
     public BigQuerySQLSinkConfig(String project, String dataset, String table, String serviceAccountPath) {
       this.project = project;
