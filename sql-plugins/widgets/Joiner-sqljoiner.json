@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "spec-version": "1.6"
+  },
+  "configuration-groups": [
+    {
+      "label": "Join",
+      "properties": [
+        {
+          "widget-type": "sql-select-fields",
+          "label": "Fields",
+          "name": "selectedFields",
+          "description": "List of fields to be selected and/or renamed in the Joiner output from each stages. There must not be a duplicate fields in the output."
+        },
+        {
+          "widget-type": "select",
+          "label": "Join Type",
+          "name": "joinType",
+          "widget-attributes": {
+            "values": [
+              "Inner",
+              "Left",
+              "Right",
+              "Full",
+              "Semi",
+              "Anti"
+            ],
+            "default": "Inner"
+          }
+        },
+        {
+          "widget-type": "sql-conditions",
+          "label": "Join Condition",
+          "name": "joinKeys",
+          "description": "List of join keys to perform join operation."
+        }
+      ]
+    }
+  ],
+  "outputs": []
+}

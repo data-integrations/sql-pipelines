@@ -21,14 +21,13 @@ import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.annotation.Plugin;
 import io.cdap.cdap.api.plugin.PluginConfig;
+import io.cdap.pipeline.sql.api.template.QueryContext;
 import io.cdap.pipeline.sql.api.template.SQLTransform;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.tools.RelBuilder;
-
-import javax.annotation.Nullable;
 
 /**
  * A SQL Filter transform.
@@ -54,27 +53,22 @@ public class FilterSQLTransform extends SQLTransform {
   public static class FilterTransformTransformConfig extends PluginConfig {
     @Name(LEFT_VALUE_NAME)
     @Description(LEFT_VALUE_DESC)
-    @Nullable
     private final String leftValue;
 
     @Name(LEFT_TYPE_NAME)
     @Description(LEFT_TYPE_DESC)
-    @Nullable
     private final String leftType;
 
     @Name(RIGHT_VALUE_NAME)
     @Description(RIGHT_VALUE_DESC)
-    @Nullable
     private final String rightValue;
 
     @Name(RIGHT_TYPE_NAME)
     @Description(RIGHT_TYPE_DESC)
-    @Nullable
     private final String rightType;
 
     @Name(OPERATION_NAME)
     @Description(OPERATION_DESC)
-    @Nullable
     private final String operation;
 
     public FilterTransformTransformConfig(String leftValue, String leftType,
@@ -144,7 +138,7 @@ public class FilterSQLTransform extends SQLTransform {
   }
 
   @Override
-  public RelNode getQuery(RelBuilder builder) {
+  public RelNode getQuery(QueryContext context) {
     if (Strings.isNullOrEmpty(config.getLeftValue())) {
       throw new IllegalArgumentException("Must specify a left-hand value.");
     }
@@ -160,6 +154,7 @@ public class FilterSQLTransform extends SQLTransform {
     if (Strings.isNullOrEmpty(config.getOperation())) {
       throw new IllegalArgumentException("Must specify an operation.");
     }
+    RelBuilder builder = context.getRelBuilder();
     RexNode leftOperand = getOperandFromStrings(builder, config.getLeftValue(), config.getLeftType().toUpperCase());
     RexNode rightOperand = getOperandFromStrings(builder, config.getRightValue(), config.getRightType().toUpperCase());
     SqlBinaryOperator operator = getOperatorFromString(config.getOperation().toUpperCase());

@@ -23,16 +23,17 @@ import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.bigquery.Schema;
 import com.google.cloud.bigquery.Table;
 import com.google.cloud.bigquery.TableId;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.annotation.Plugin;
 import io.cdap.cdap.api.plugin.PluginConfig;
+import io.cdap.pipeline.sql.api.template.QueryContext;
 import io.cdap.pipeline.sql.api.template.SQLSource;
 import io.cdap.pipeline.sql.api.template.tables.AbstractTableInfo;
 import io.cdap.pipeline.sql.api.template.tables.DelegateTable;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.tools.RelBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,13 +52,14 @@ public class BigQuerySQLSource extends SQLSource {
   private final BigQuerySQLSourceConfig config;
   private static final Logger LOG = LoggerFactory.getLogger(BigQuerySQLSource.class);
 
-  public BigQuerySQLSource(BigQuerySQLSourceConfig config) {
+  @VisibleForTesting
+  BigQuerySQLSource(BigQuerySQLSourceConfig config) {
     this.config = config;
   }
 
   @Override
-  public RelNode getQuery(RelBuilder builder) {
-    return builder.build();
+  public RelNode getQuery(QueryContext context) {
+    return context.getRelBuilder().build();
   }
 
   @Override

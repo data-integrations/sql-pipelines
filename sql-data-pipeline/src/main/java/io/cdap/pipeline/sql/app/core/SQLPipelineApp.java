@@ -17,11 +17,14 @@
 package io.cdap.pipeline.sql.app.core;
 
 import io.cdap.cdap.api.app.AbstractApplication;
+import io.cdap.cdap.api.app.ProgramType;
+import io.cdap.cdap.api.schedule.ScheduleBuilder;
 
 /**
  * The pipeline application for an SQL pipeline.
  */
 public class SQLPipelineApp extends AbstractApplication<SQLConfig> {
+  public static final String SCHEDULE_NAME = "dataPipelineSchedule";
   public static final String DEFAULT_DESCRIPTION = "SQL Pipeline Application";
 
   @Override
@@ -35,5 +38,12 @@ public class SQLPipelineApp extends AbstractApplication<SQLConfig> {
     }
 
     getConfigurer().addWorkflow(new SQLWorkflow(config, getConfigurer()));
+
+    String timeSchedule = config.getSchedule();
+    if (timeSchedule != null) {
+      ScheduleBuilder scheduleBuilder = buildSchedule(SCHEDULE_NAME, ProgramType.WORKFLOW, SQLWorkflow.NAME)
+        .setDescription("Data pipeline schedule");
+      schedule(scheduleBuilder.triggerByTime(timeSchedule));
+    }
   }
 }

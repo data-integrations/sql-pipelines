@@ -16,8 +16,8 @@
 
 package io.cdap.pipeline.sql.api.template.interfaces;
 
+import io.cdap.pipeline.sql.api.template.QueryContext;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.tools.RelBuilder;
 
 /**
  * An interface defining an SQL pipeline node. The SQL pipeline node defines transformation behaviors for
@@ -25,22 +25,12 @@ import org.apache.calcite.tools.RelBuilder;
  */
 public interface SQLNode {
   /**
-   * The application will push all input nodes to a SQLNode to the current {@link RelBuilder} stack.
-   *
-   * This method should be reserved for logic which needs the overall pipeline context (e.g. joins). For
-   * single-input transformations (e.g. aggregation, projection, or filter), use the getQuery() method.
-   *
-   * @param builder The {@link RelNode} expression builder used to generate the query
-   * @param dependencies The number of input nodes which were passed in
-   * @return The relational expression builder with one input on the stack
-   */
-  RelBuilder combineInputs(RelBuilder builder, int dependencies);
-
-  /**
    * Performs a transform on the passed in relational expression builder and returns the relational expression.
    *
-   * @param builder The {@link RelNode} expression builder used to generate the query
+   * getQuery is guaranteed to be called exactly once for each plugin.
+   *
+   * @param context The {@link QueryContext} object which contains pipeline info for the plugin to use.
    * @return The relational expression
    */
-  RelNode getQuery(RelBuilder builder);
+  RelNode getQuery(QueryContext context);
 }

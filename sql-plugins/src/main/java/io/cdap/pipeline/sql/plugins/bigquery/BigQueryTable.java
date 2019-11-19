@@ -55,7 +55,7 @@ public class BigQueryTable extends AbstractTable {
     if (calciteType.equals(SqlTypeName.ARRAY)) {
       // ARRAY type
       subType = typeFactory.createArrayType(createSubType(field.getSubFields().get(0), typeFactory), -1);
-    } else if (field.getMode().equals(Field.Mode.REPEATED)) {
+    } else if (field.getMode() != null && field.getMode().equals(Field.Mode.REPEATED)) {
       // REPEATED type (basically ARRAY)
       subType = typeFactory.createArrayType(typeFactory.createSqlType(calciteType), -1);
     } else if (calciteType.equals(SqlTypeName.STRUCTURED)) {
@@ -72,7 +72,11 @@ public class BigQueryTable extends AbstractTable {
       subType = typeFactory.createSqlType(calciteType);
     }
     // Check if the type is nullable
-    return typeFactory.createTypeWithNullability(subType, field.getMode().equals(Field.Mode.NULLABLE));
+    Field.Mode mode = field.getMode();
+    if (mode == null) {
+      mode = Field.Mode.REQUIRED;
+    }
+    return typeFactory.createTypeWithNullability(subType, mode.equals(Field.Mode.NULLABLE));
   }
 
   private SqlTypeName convertBasicType(StandardSQLTypeName type) {

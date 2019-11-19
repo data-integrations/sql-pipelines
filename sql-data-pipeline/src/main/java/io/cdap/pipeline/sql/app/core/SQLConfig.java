@@ -20,6 +20,7 @@ import io.cdap.cdap.etl.proto.v2.ETLConfig;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import javax.annotation.Nullable;
 
 /**
  * Represents an SQL configuration object.
@@ -28,11 +29,19 @@ import java.util.HashSet;
  * variables may be added.
  */
 public class SQLConfig extends ETLConfig {
+  private final String schedule;
+
   /**
    * For compilation purposes.
    */
-  public SQLConfig() {
+  public SQLConfig(String schedule) {
     super(new HashSet<>(), new HashSet<>(), null, null, null,
           false, false, 0, new HashMap<>());
+    this.schedule = schedule;
+  }
+
+  @Nullable
+  public String getSchedule() {
+    return schedule;
   }
 }

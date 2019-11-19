@@ -21,7 +21,7 @@ import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.bigquery.BigQuery;
 import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.bigquery.QueryJobConfiguration;
-import io.cdap.pipeline.sql.api.template.SQLTransform;
+import io.cdap.pipeline.sql.api.template.interfaces.SQLNode;
 import io.cdap.pipeline.sql.app.core.AbstractSQLExecutor;
 import io.cdap.pipeline.sql.app.core.SQLConfig;
 import org.apache.calcite.sql.SqlDialect;
@@ -43,7 +43,7 @@ public class BigQueryExecutor extends AbstractSQLExecutor {
 
   private String serviceAccountPath;
 
-  public BigQueryExecutor(SQLConfig config, Map<String, SQLTransform> pluginMap) {
+  public BigQueryExecutor(SQLConfig config, Map<String, SQLNode> pluginMap) {
     super(config, pluginMap);
   }
 

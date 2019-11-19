@@ -19,10 +19,11 @@ package io.cdap.pipeline.sql.api.template;
 import io.cdap.pipeline.sql.api.template.interfaces.SQLNode;
 
 /**
- * Represents an abstract SQL transformation node.
+ * An abstract class which represents a node that combines multiple inputs into one. This class type is checked
+ * in the application.
  *
- * The RelBuilder within the QueryContext passed into this class is guaranteed to have exactly one input.
+ * The RelBuilder passed into the QueryContext of this class is guaranteed to have two inputs.
  */
-public abstract class SQLTransform implements SQLNode {
-  public static final String PLUGIN_TYPE = "sqltransform";
+public abstract class SQLJoiner implements SQLNode {
+  public static final String PLUGIN_TYPE = "sqljoiner";
 }

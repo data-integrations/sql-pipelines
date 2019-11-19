@@ -16,16 +16,17 @@
 
 package io.cdap.pipeline.sql.plugins.bigquery;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.annotation.Plugin;
 import io.cdap.cdap.api.plugin.PluginConfig;
+import io.cdap.pipeline.sql.api.template.QueryContext;
 import io.cdap.pipeline.sql.api.template.SQLSink;
 import io.cdap.pipeline.sql.api.template.tables.AbstractTableInfo;
 import io.cdap.pipeline.sql.api.template.tables.SchemalessTable;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.tools.RelBuilder;
 
 /**
  * A BigQuery SQL sink.
@@ -36,13 +37,14 @@ import org.apache.calcite.tools.RelBuilder;
 public class BigQuerySQLSink extends SQLSink {
   private final BigQuerySQLSinkConfig config;
 
-  public BigQuerySQLSink(BigQuerySQLSinkConfig config) {
+  @VisibleForTesting
+  BigQuerySQLSink(BigQuerySQLSinkConfig config) {
     this.config = config;
   }
 
   @Override
-  public RelNode getQuery(RelBuilder builder) {
-    return builder.build();
+  public RelNode getQuery(QueryContext context) {
+    return context.getRelBuilder().build();
   }
 
   @Override

@@ -16,6 +16,7 @@
 
 package io.cdap.pipeline.sql.plugins.projection;
 
+import io.cdap.pipeline.sql.api.template.QueryContext;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
@@ -33,90 +34,56 @@ public class ProjectionSQLTransformTest {
   public void testEmptySelect() {
     ProjectionSQLTransform.ProjectionSQLTransformConfig config =
       new ProjectionSQLTransform.ProjectionSQLTransformConfig("", "", "");
-    ProjectionSQLTransform transform = new ProjectionSQLTransform(config);
-    RelBuilder builder = Mockito.mock(RelBuilder.class);
-    transform.getQuery(builder);
+    config.parseSelect();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testEmptySelectField() {
     ProjectionSQLTransform.ProjectionSQLTransformConfig config =
       new ProjectionSQLTransform.ProjectionSQLTransformConfig("", "", "a,b,,d");
-    ProjectionSQLTransform transform = new ProjectionSQLTransform(config);
-    RelBuilder builder = Mockito.mock(RelBuilder.class);
-    transform.getQuery(builder);
+    config.parseSelect();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInvalidRenameKeyPair() {
     ProjectionSQLTransform.ProjectionSQLTransformConfig config =
       new ProjectionSQLTransform.ProjectionSQLTransformConfig("a:,c:d", "", "a,b,,d");
-    ProjectionSQLTransform transform = new ProjectionSQLTransform(config);
-    RelBuilder builder = Mockito.mock(RelBuilder.class);
-    transform.getQuery(builder);
+    config.parseRename();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInvalidCastKeyPair() {
     ProjectionSQLTransform.ProjectionSQLTransformConfig config =
       new ProjectionSQLTransform.ProjectionSQLTransformConfig("", "a:,b:varchar", "a,b,,d");
-    ProjectionSQLTransform transform = new ProjectionSQLTransform(config);
-    RelBuilder builder = Mockito.mock(RelBuilder.class);
-    transform.getQuery(builder);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testRenameFieldNotPresentInSelect() {
-    ProjectionSQLTransform.ProjectionSQLTransformConfig config =
-      new ProjectionSQLTransform.ProjectionSQLTransformConfig("d:b", "", "a,b,c");
-    ProjectionSQLTransform transform = new ProjectionSQLTransform(config);
-    RelBuilder builder = Mockito.mock(RelBuilder.class);
-    transform.getQuery(builder);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCastFieldNotPresentInSelect() {
-    ProjectionSQLTransform.ProjectionSQLTransformConfig config =
-      new ProjectionSQLTransform.ProjectionSQLTransformConfig("", "d:varchar", "a,b,c");
-    ProjectionSQLTransform transform = new ProjectionSQLTransform(config);
-    RelBuilder builder = Mockito.mock(RelBuilder.class);
-    transform.getQuery(builder);
+    config.parseCast();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testRenameFieldToMultipleNames() {
     ProjectionSQLTransform.ProjectionSQLTransformConfig config =
       new ProjectionSQLTransform.ProjectionSQLTransformConfig("a:d,a:e", "", "a,b,c");
-    ProjectionSQLTransform transform = new ProjectionSQLTransform(config);
-    RelBuilder builder = Mockito.mock(RelBuilder.class);
-    transform.getQuery(builder);
+    config.parseRename();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testRenameFieldsToSameName() {
     ProjectionSQLTransform.ProjectionSQLTransformConfig config =
       new ProjectionSQLTransform.ProjectionSQLTransformConfig("a:e,b:e", "", "a,b,c");
-    ProjectionSQLTransform transform = new ProjectionSQLTransform(config);
-    RelBuilder builder = Mockito.mock(RelBuilder.class);
-    transform.getQuery(builder);
+    config.parseRename();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testCastFieldToMultipleTypes() {
     ProjectionSQLTransform.ProjectionSQLTransformConfig config =
       new ProjectionSQLTransform.ProjectionSQLTransformConfig("", "a:varchar,a:integer", "a,b,c");
-    ProjectionSQLTransform transform = new ProjectionSQLTransform(config);
-    RelBuilder builder = Mockito.mock(RelBuilder.class);
-    transform.getQuery(builder);
+    config.parseCast();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInvalidCastType() {
     ProjectionSQLTransform.ProjectionSQLTransformConfig config =
       new ProjectionSQLTransform.ProjectionSQLTransformConfig("", "a:x", "a,b,c");
-    ProjectionSQLTransform transform = new ProjectionSQLTransform(config);
-    RelBuilder builder = Mockito.mock(RelBuilder.class);
-    transform.getQuery(builder);
+    config.parseCast();
   }
 
   @Test
@@ -149,8 +116,8 @@ public class ProjectionSQLTransformTest {
     Mockito.when(builder.project(fields)).thenReturn(finalBuilder);
     Mockito.when(finalBuilder.build()).thenReturn(expected);
 
-    RelNode rel = transform.getQuery(builder);
-
+    QueryContext context = new QueryContext(builder, null);
+    RelNode rel = transform.getQuery(context);
     Assert.assertEquals(expected, rel);
   }
 }

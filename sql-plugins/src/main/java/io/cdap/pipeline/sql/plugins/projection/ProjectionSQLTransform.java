@@ -16,6 +16,7 @@
 
 package io.cdap.pipeline.sql.plugins.projection;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -23,6 +24,7 @@ import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.annotation.Plugin;
 import io.cdap.cdap.api.plugin.PluginConfig;
+import io.cdap.pipeline.sql.api.template.QueryContext;
 import io.cdap.pipeline.sql.api.template.SQLTransform;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rex.RexNode;
@@ -80,14 +82,76 @@ public class ProjectionSQLTransform extends SQLTransform {
       this.cast = cast;
       this.select = select;
     }
+
+    public List<String> parseSelect() {
+      List<String> fieldsToSelect = new ArrayList<>();
+      if (!Strings.isNullOrEmpty(select)) {
+        for (String field: select.split(Pattern.quote(","))) {
+          if (!Strings.isNullOrEmpty(field)) {
+            fieldsToSelect.add(field);
+          } else {
+            throw new IllegalArgumentException("Select field may not be empty.");
+          }
+        }
+      } else {
+        throw new IllegalArgumentException("Must specify one of drop or select.");
+      }
+      return fieldsToSelect;
+    }
+
+    public BiMap<String, String> parseRename() {
+      BiMap<String, String> fieldsToRename = HashBiMap.create();
+      if (!Strings.isNullOrEmpty(rename)) {
+        String[] mappings = rename.split(Pattern.quote(","));
+        for (String mapping: mappings) {
+          String[] keyValuePair = mapping.split(Pattern.quote(":"));
+          if (keyValuePair.length != 2) {
+            throw new IllegalArgumentException("Rename mapping '" + mapping + "' must contain a key and a value.");
+          }
+          if (fieldsToRename.containsKey(keyValuePair[0])) {
+            throw new IllegalArgumentException("Cannot rename a column to multiple different values.");
+          }
+          try {
+            fieldsToRename.put(keyValuePair[0], keyValuePair[1]);
+          } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Cannot rename more than one column to '" + keyValuePair[1] + " " +
+                                                 e.getMessage());
+          }
+        }
+      }
+      return fieldsToRename;
+    }
+
+    public Map<String, SqlTypeName> parseCast() {
+      Map<String, SqlTypeName> fieldsToCast = new HashMap<>();
+      if (!Strings.isNullOrEmpty(cast)) {
+        String[] mappings = cast.split(Pattern.quote(","));
+        for (String mapping: mappings) {
+          String[] keyValuePair = mapping.split(Pattern.quote(":"));
+          if (keyValuePair.length != 2) {
+            throw new IllegalArgumentException("Cast mapping '" + mapping + "' must contain a key and a type.");
+          }
+          SqlTypeName type = SqlTypeName.get(keyValuePair[1].toUpperCase());
+          if (type == null) {
+            throw new IllegalArgumentException("Unsupported type cast to '" + keyValuePair[1] + "'.");
+          }
+          if (fieldsToCast.containsKey(keyValuePair[0])) {
+            throw new IllegalArgumentException("Cannot cast column '" + keyValuePair[0] + "' to multiple types.");
+          }
+          fieldsToCast.put(keyValuePair[0], type);
+        }
+      }
+      return fieldsToCast;
+    }
   }
 
   private final ProjectionSQLTransformConfig projectionTransformConfig;
-  private final List<String> fieldsToSelect;
-  private final BiMap<String, String> fieldsToRename;
-  private final Map<String, SqlTypeName> fieldsToCast;
+  private List<String> fieldsToSelect;
+  private BiMap<String, String> fieldsToRename;
+  private Map<String, SqlTypeName> fieldsToCast;
 
-  public ProjectionSQLTransform(ProjectionSQLTransformConfig projectionTransformConfig) {
+  @VisibleForTesting
+  ProjectionSQLTransform(ProjectionSQLTransformConfig projectionTransformConfig) {
     this.projectionTransformConfig = projectionTransformConfig;
     this.fieldsToSelect = new ArrayList<>();
     this.fieldsToRename = HashBiMap.create();
@@ -95,9 +159,14 @@ public class ProjectionSQLTransform extends SQLTransform {
   }
 
   @Override
-  public RelNode getQuery(RelBuilder builder) {
-    // Initialize
-    init();
+  public RelNode getQuery(QueryContext context) {
+    RelBuilder builder = context.getRelBuilder();
+
+    // Parse config
+    fieldsToSelect = projectionTransformConfig.parseSelect();
+    fieldsToRename = projectionTransformConfig.parseRename();
+    fieldsToCast = projectionTransformConfig.parseCast();
+
     if (fieldsToSelect.isEmpty()) {
       throw new IllegalArgumentException("Must specify what columns to select.");
     }
@@ -115,64 +184,5 @@ public class ProjectionSQLTransform extends SQLTransform {
       fields.add(field);
     }
     return builder.project(fields).build();
-  }
-
-  private void init() {
-    // Setup select sets
-    if (!Strings.isNullOrEmpty(projectionTransformConfig.select)) {
-      for (String field: projectionTransformConfig.select.split(Pattern.quote(","))) {
-        if (!Strings.isNullOrEmpty(field)) {
-          fieldsToSelect.add(field);
-        } else {
-          throw new IllegalArgumentException("Select field may not be empty.");
-        }
-      }
-    } else {
-      throw new IllegalArgumentException("Must specify one of drop or select.");
-    }
-    // Setup the rename map
-    if (!Strings.isNullOrEmpty(projectionTransformConfig.rename)) {
-      String[] mappings = projectionTransformConfig.rename.split(Pattern.quote(","));
-      for (String mapping: mappings) {
-        String[] keyValuePair = mapping.split(Pattern.quote(":"));
-        if (keyValuePair.length != 2) {
-          throw new IllegalArgumentException("Rename mapping '" + mapping + "' must contain a key and a value.");
-        }
-        if (!fieldsToSelect.contains(keyValuePair[0])) {
-          throw new IllegalArgumentException("Field to rename must be present in selected columns.");
-        }
-        if (fieldsToRename.containsKey(keyValuePair[0])) {
-          throw new IllegalArgumentException("Cannot rename column '" +
-                                               keyValuePair[0] + "' to two different values.");
-        }
-        try {
-          fieldsToRename.put(keyValuePair[0], keyValuePair[1]);
-        } catch (IllegalArgumentException e) {
-          throw new IllegalArgumentException("Cannot rename more than one column to '" + keyValuePair[1] + " " +
-                                               e.getMessage());
-        }
-      }
-    }
-    // Setup the cast map
-    if (!Strings.isNullOrEmpty(projectionTransformConfig.cast)) {
-      String[] mappings = projectionTransformConfig.cast.split(Pattern.quote(","));
-      for (String mapping: mappings) {
-        String[] keyValuePair = mapping.split(Pattern.quote(":"));
-        if (keyValuePair.length != 2) {
-          throw new IllegalArgumentException("Cast mapping '" + mapping + "' must contain a key and a type.");
-        }
-        if (!fieldsToSelect.contains(keyValuePair[0])) {
-          throw new IllegalArgumentException("Field to cast must be present in selected columns.");
-        }
-        SqlTypeName type = SqlTypeName.get(keyValuePair[1].toUpperCase());
-        if (type == null) {
-          throw new IllegalArgumentException("Unsupported type cast to '" + keyValuePair[1] + "'.");
-        }
-        if (fieldsToCast.containsKey(keyValuePair[0])) {
-          throw new IllegalArgumentException("Cannot cast column '" + keyValuePair[0] + "' to multiple types.");
-        }
-        fieldsToCast.put(keyValuePair[0], type);
-      }
-    }
   }
 }
