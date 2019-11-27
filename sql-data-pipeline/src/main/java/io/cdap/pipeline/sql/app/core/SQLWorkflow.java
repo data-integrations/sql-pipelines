@@ -23,7 +23,7 @@ import io.cdap.cdap.etl.common.ArtifactSelectorProvider;
 import io.cdap.cdap.etl.proto.v2.ETLPlugin;
 import io.cdap.cdap.etl.proto.v2.ETLStage;
 import io.cdap.cdap.etl.spec.TrackedPluginSelector;
-import io.cdap.pipeline.sql.api.template.SQLTransform;
+import io.cdap.pipeline.sql.api.template.interfaces.SQLNode;
 import io.cdap.pipeline.sql.app.bigquery.BigQueryExecutor;
 
 import java.util.HashMap;
@@ -33,6 +33,7 @@ import java.util.Map;
  * Represents the entire workflow in an SQL pipeline.
  */
 public class SQLWorkflow extends AbstractWorkflow {
+  public static final String NAME = "SQLWorkflow";
   private final PluginConfigurer pluginConfigurer;
   private final SQLConfig config;
 
@@ -48,7 +49,7 @@ public class SQLWorkflow extends AbstractWorkflow {
 
   @Override
   public void configure() {
-    Map<String, SQLTransform> pluginMap = new HashMap<>();
+    Map<String, SQLNode> pluginMap = new HashMap<>();
 
     // Map the plugins to plugin identifiers so they may be instantiated at runtime
     for (ETLStage stage: config.getStages()) {
@@ -62,7 +63,7 @@ public class SQLWorkflow extends AbstractWorkflow {
                                             plugin.getName(), plugin.getType());
         throw new IllegalStateException(errorMessage);
       }
-      pluginMap.put(stage.getName(), (SQLTransform) pluginObject);
+      pluginMap.put(stage.getName(), (SQLNode) pluginObject);
     }
     addAction(new BigQueryExecutor(config, pluginMap));
   }

@@ -16,6 +16,7 @@
 
 package io.cdap.pipeline.sql.plugins.filter;
 
+import io.cdap.pipeline.sql.api.template.QueryContext;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
@@ -73,7 +74,9 @@ public class FilterSQLTransformTest {
     FilterSQLTransform.FilterTransformTransformConfig config = new FilterSQLTransform.FilterTransformTransformConfig(
       "a", "b", "c", "d", "e");
     FilterSQLTransform transform = new FilterSQLTransform(config);
-    transform.getQuery(null);
+    RelBuilder builder = Mockito.mock(RelBuilder.class);
+    QueryContext context = new QueryContext(builder, null);
+    transform.getQuery(context);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -82,7 +85,8 @@ public class FilterSQLTransformTest {
       "a", "string", "c", "string", "e");
     FilterSQLTransform transform = new FilterSQLTransform(config);
     RelBuilder builder = Mockito.mock(RelBuilder.class);
-    transform.getQuery(builder);
+    QueryContext context = new QueryContext(builder, null);
+    transform.getQuery(context);
   }
 
   @Test
@@ -106,7 +110,8 @@ public class FilterSQLTransformTest {
     Mockito.when(builder.filter(condition)).thenReturn(finalBuilder);
     Mockito.when(finalBuilder.build()).thenReturn(expected);
 
-    RelNode rel = transform.getQuery(builder);
+    QueryContext context = new QueryContext(builder, null);
+    RelNode rel = transform.getQuery(context);
     Assert.assertEquals(expected, rel);
   }
 }

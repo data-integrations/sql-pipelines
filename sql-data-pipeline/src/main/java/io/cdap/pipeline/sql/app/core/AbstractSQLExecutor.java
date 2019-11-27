@@ -23,12 +23,15 @@ import io.cdap.cdap.api.customaction.AbstractCustomAction;
 import io.cdap.cdap.etl.planner.Dag;
 import io.cdap.cdap.etl.proto.Connection;
 import io.cdap.cdap.etl.proto.v2.ETLStage;
+import io.cdap.pipeline.sql.api.template.QueryContext;
+import io.cdap.pipeline.sql.api.template.SQLJoiner;
 import io.cdap.pipeline.sql.api.template.SQLSink;
 import io.cdap.pipeline.sql.api.template.SQLSource;
-import io.cdap.pipeline.sql.api.template.SQLTransform;
+import io.cdap.pipeline.sql.api.template.interfaces.SQLNode;
 import io.cdap.pipeline.sql.api.template.tables.AbstractTableInfo;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.jdbc.Driver;
+import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -49,6 +52,7 @@ import org.apache.calcite.tools.Frameworks;
 import org.apache.calcite.tools.RelBuilder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,7 +76,7 @@ public abstract class AbstractSQLExecutor extends AbstractCustomAction {
   private Dag dag;
   private Set<String> sourceStages;
   private Set<String> sinkStages;
-  private Map<String, SQLTransform> pluginMap;
+  private Map<String, SQLNode> pluginMap;
   private Map<String, Set<String>> fromNodeMap;
   private Map<String, Set<String>> toNodeMap;
   private Map<String, RelNode> relationalNodeMap;
@@ -80,7 +84,7 @@ public abstract class AbstractSQLExecutor extends AbstractCustomAction {
   private List<String> queries;
   private boolean createTableFeatureFlag;
 
-  public AbstractSQLExecutor(SQLConfig config, Map<String, SQLTransform> pluginMap) {
+  public AbstractSQLExecutor(SQLConfig config, Map<String, SQLNode> pluginMap) {
     this.config = config;
     this.sourceStages = new HashSet<>();
     this.sinkStages = new HashSet<>();
@@ -133,7 +137,8 @@ public abstract class AbstractSQLExecutor extends AbstractCustomAction {
     // Flag to enable or disable creation of tables when they don't exist
     createTableFeatureFlag = false;
     // Set whether we want to create tables if they do not exist
-    if (getContext().getRuntimeArguments().get(CREATE_TABLE_FEATURE_FLAG).equals("true")) {
+    String featureFlagStr = getContext().getRuntimeArguments().get(CREATE_TABLE_FEATURE_FLAG);
+    if (featureFlagStr != null && featureFlagStr.equals("true")) {
       createTableFeatureFlag = true;
     }
 
@@ -224,7 +229,7 @@ public abstract class AbstractSQLExecutor extends AbstractCustomAction {
       String node = stage.getName();
 
       // Instantiate the plugin
-      SQLTransform plugin;
+      SQLNode plugin;
       try {
         plugin = getContext().newPluginInstance(node);
       } catch (InstantiationException e) {
@@ -282,7 +287,7 @@ public abstract class AbstractSQLExecutor extends AbstractCustomAction {
     // Traverse the topological ordering
     for (String node: topologicalOrder) {
       // Get the plugin
-      SQLTransform plugin = pluginMap.get(node);
+      SQLNode plugin = pluginMap.get(node);
 
       // Create the RelBuilder for generating the query
       final RelBuilder builder = RelBuilder.create(builderConfig);
@@ -290,6 +295,8 @@ public abstract class AbstractSQLExecutor extends AbstractCustomAction {
       // Generate schema from source nodes
       // Adding the tables directly to the SchemaPlus seems kind of hacky
       // TODO: CDAP-16095 Revisit schema generation
+      // We want to keep the inputs to the nodes in order, hence the linked hashmap
+      List<String> nodeInputs = new ArrayList<>();
       if (sourceStages.contains(node)) {
         // The stage is a source node
         SQLSource sourcePlugin = (SQLSource) plugin;
@@ -298,6 +305,7 @@ public abstract class AbstractSQLExecutor extends AbstractCustomAction {
         rootSchema.add(table.getTableName(), table);
         // Add a scan for the source table
         builder.scan(table.getTableName());
+        nodeInputs.add(table.getTableName());
       } else {
         // Node is not a source node
         // Add all dependencies of the current node to the builder parameter stack
@@ -311,15 +319,25 @@ public abstract class AbstractSQLExecutor extends AbstractCustomAction {
             // Otherwise push the inlined query
             builder.push(relationalNodeMap.get(fromNode));
           }
+          nodeInputs.add(fromNode);
         }
 
-        // Pass the builder to the node to allow it to combine the inputs
-        int dependencies = fromNodes.size();
-        plugin.combineInputs(builder, dependencies);
+        // Check if a node is a joiner node
+        if (plugin instanceof SQLJoiner) {
+          if (nodeInputs.size() != 2) {
+            throw new IllegalArgumentException("Joiner nodes must have exactly two inputs.");
+          }
+        } else {
+          // Perform an implicit union if multiple inputs
+          if (nodeInputs.size() > 1) {
+            builder.union(true, nodeInputs.size());
+          }
+        }
       }
 
       // Get the relational query node and set the node in the map
-      relationalNodeMap.put(node, plugin.getQuery(builder));
+      QueryContext context = new QueryContext(builder, nodeInputs);
+      relationalNodeMap.put(node, plugin.getQuery(context));
 
       // Check if the node is a splitter node
       if (toNodeMap.containsKey(node) && toNodeMap.get(node).size() > 1) {
@@ -395,5 +413,18 @@ public abstract class AbstractSQLExecutor extends AbstractCustomAction {
       query.append(sqlQueryNode.toSqlString(getDialect()));
       queries.add(query.toSqlString().getSql());
     }
+  }
+
+  /**
+   * Creates a {@link RelNode} representing a table scan.
+   *
+   * @param builder The {@link RelBuilder} to use
+   * @param tableName Name of the table (can optionally be qualified)
+   * @return A relational node representing a table scan
+   */
+  private RelNode createScan(RelBuilder builder, String... tableName) {
+    List<String> name = Arrays.asList(tableName);
+    RelOptTable table = builder.getRelOptSchema().getTableForMember(Collections.unmodifiableList(name));
+    return builder.getScanFactory().createScan(builder.getCluster(), table);
   }
 }

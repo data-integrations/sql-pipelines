@@ -20,6 +20,7 @@ import com.google.common.annotations.VisibleForTesting;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.annotation.Plugin;
+import io.cdap.pipeline.sql.api.template.QueryContext;
 import io.cdap.pipeline.sql.api.template.SQLTransform;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rex.RexNode;
@@ -48,7 +49,9 @@ public class GroupByAggregator extends SQLTransform {
   }
 
   @Override
-  public RelNode getQuery(RelBuilder builder) {
+  public RelNode getQuery(QueryContext context) {
+    RelBuilder builder = context.getRelBuilder();
+
     // Initialize
     init();
 
